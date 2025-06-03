@@ -1,0 +1,12 @@
+PORT ?= 8080
+install:
+	uv sync
+
+dev:
+	uv run manage.py runserver 8080
+
+build:
+	./build.sh
+
+render-start:
+	gunicorn task_manager.wsgi
