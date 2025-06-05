@@ -10,3 +10,9 @@ build:
 
 render-start:
 	gunicorn task_manager.wsgi
+
+collectstatic:
+	uv run manage.py collectstatic
+
+migrate:
+	uv run manage.py migrate
