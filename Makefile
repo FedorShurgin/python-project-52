@@ -16,3 +16,6 @@ collectstatic:
 
 migrate:
 	uv run manage.py migrate
+
+lint:
+	uv run flake8
