@@ -1,4 +1,5 @@
 PORT ?= 8080
+
 install:
 	uv sync
 
@@ -18,4 +19,4 @@ migrate:
 	uv run manage.py migrate
 
 lint:
-	uv run flake8
+	uv run flake8 task_manager
