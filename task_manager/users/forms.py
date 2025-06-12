@@ -1,14 +1,14 @@
 from django import forms
-from django.forms import ModelForm
+from django.contrib.auth.forms import UserCreationForm
 from task_manager.users.models import UsersModels
 
-class UserForms(ModelForm):
-    name = forms.CharField(label='Имя')
+class UserForms(UserCreationForm):
+    first_name = forms.CharField(label='Имя')
     last_name = forms.CharField(label='Фамилия')
-    nickname = forms.CharField(label='Имя пользователя')
-    password = forms.CharField(label='Пароль')
-    passwor2 = forms.CharField(label='Подтверждение пароля')
+    username = forms.CharField(label='Имя пользователя')
+    password1 = forms.CharField(label='Пароль')
+    password2 = forms.CharField(label='Подтверждение пароля')
     
     class Meta:
         model = UsersModels
-        fields = ['name', 'last_name', 'nickname', 'password', 'passwor2']
+        fields = ['first_name', 'last_name', 'username', 'password1', 'password2']
