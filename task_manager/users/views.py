@@ -1,19 +1,9 @@
-from django.shortcuts import render, redirect
-from django.views import View
-from task_manager.users.models import UsersModels
-from task_manager.users.forms import UserForms
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 
 
-class UserCreateView(View):
-    
-    def get(self, request, *args, **kwargs):
-        form = UserForms()
-        return render(request, 'users/create.html', {'form': form})
-    
-    def post(self, request, *args, **kwargs):
-        form = UserForms(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-        
-        return render(request, 'users/create.html', {'form': form})
+class SignUpView(CreateView):
+    form_class = UserCreationForm
+    success_url = reverse_lazy('login')
+    template_name = 'users/create.html'
