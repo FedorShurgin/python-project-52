@@ -1,5 +1,11 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<h1 class="my-4">Вход</h1>
 <form method='post'>
     {% csrf_token %}
     {{ form }}
-    <button type='submit'>Кнопка</button>
+    <button type='submit'>Войти</button>
 </form>
+{% endblock %}
