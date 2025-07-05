@@ -13,23 +13,44 @@
       <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
-        {% block menu %}{% endblock %}
-        <ul class="navbar-nav">
-          {% if request.user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
-            </li>
-          {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href={% url 'login' %}>Вход</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href={% url 'create_user' %}>Регистрация</a>
-            </li>
-          {% endif %}
+  {% if request.user.is_authenticated %}
+    <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a class="nav-link" href={% url 'list_users' %}>Пользователи</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href={% url 'statuses' %}>Статусы</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href={% url 'labels' %}>Метки</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href={% url 'tasks' %}>Задачи</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href={% url 'logout' %}>Выйти</a>
+        </li>
+          
+    </ul>
+    </div>
+      
+  {% else %}
+    <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
+        <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a class="nav-link" href={% url 'list_users'  %}>Пользователи</a>
+          </li>
+        <li class="nav-item">
+            <a class="nav-link" href={% url 'login' %}>Вход</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href={% url 'create_user' %}>Регистрация</a>
+        </li>
+          
         </ul>
-      </div>
+    </div>
+  {% endif %}
     </nav>
     {% block content %}{% endblock %}
     <footer>

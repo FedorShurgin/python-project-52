@@ -1,29 +1,7 @@
 {% extends "base.html" %}
+{% load django_bootstrap5 %}
 
-{% block menu %}
-  {% if user.is_authenticated %}
-    {% for m in menu %}
-        <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href={% url m.url_name  %}>{{ m.title }}</a>
-          </li>
-          
-        </ul>
-      
-    {% endfor %}
-  {% else %}
-        <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href={% url menu.url_name  %}>{{ menu.title }}</a>
-          </li>
-          
-        </ul>
-  {% endif %}
-      
 
-{% endblock %}
 {% block content %}
     <div class="container wrapper flex-grow-1">
       
