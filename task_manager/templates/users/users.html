@@ -21,7 +21,7 @@
             <th>{{ user.get_full_name }}</th>
             <th>{{ user.date_joined }}</th>
             <th>
-              <a>Изменить</a><br>
+              <a href={% url 'update_user' user.pk %}>Изменить</a><br>
               <a href={% url 'delete_user' user.pk %}>Удалить</a>
             </th>
         </tr>
