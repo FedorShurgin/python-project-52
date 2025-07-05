@@ -22,7 +22,7 @@
             <th>{{ user.date_joined }}</th>
             <th>
               <a>Изменить</a><br>
-              <a>Удалить</a>
+              <a href={% url 'delete_user' user.pk %}>Удалить</a>
             </th>
         </tr>
         {% endfor %}

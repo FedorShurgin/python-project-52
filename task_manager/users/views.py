@@ -1,5 +1,5 @@
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, DeleteView
 from task_manager.users.forms import CustomUserCreationForm
 from django.contrib.auth.models import User
 from django.views.generic import ListView
@@ -23,3 +23,7 @@ class UsersView(ListView):
 #     template_name = 'users/user.html'
 #     fields = ('first_name', 'last_name', 'username', 'password')
 
+class UserDeleteView(DeleteView):
+    model = User
+    template_name = 'users/delete.html'
+    success_url = reverse_lazy('home')
