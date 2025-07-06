@@ -23,3 +23,6 @@ migrate:
 
 lint:
 	uv run flake8 task_manager
+
+shell:
+	uv run manage.py shell

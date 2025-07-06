@@ -24,7 +24,7 @@ from task_manager.views import logout_user, statuses, labels, tasks
 urlpatterns = [
     path('', TemplateView.as_view(template_name = 'index.html'), name='home'),
     path('users/', include('task_manager.users.urls')),
-    path('statuses/', statuses, name='statuses'),
+    path('statuses/', include('task_manager.statuses.urls')),
     path('labels/', labels, name='labels'),
     path('tasks/', tasks, name='tasks'),
     path('login/', LoginView.as_view(template_name = 'login.html'), name='login'),
