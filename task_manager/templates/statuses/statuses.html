@@ -20,8 +20,8 @@
             <th>{{ status.name }}</th>
             <th>{{ status.date_create }}</th>
             <th>
-              <a>Изменить</a><br>
-              <a>Удалить</a>
+              <a href={% url 'update_status' status.pk %}>Изменить</a><br>
+              <a href={% url 'delete_status' status.pk %}>Удалить</a>
             </th>
         </tr>
         {% endfor %}

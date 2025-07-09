@@ -23,10 +23,8 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
     form_class = CustomUserUpdateForm
     template_name = 'users/user.html'
     context_object_name = 'user'
-    success_url = reverse_lazy('users')
-    
-    def get_object(self, queryset=None):
-        return self.request.user
+    success_url = reverse_lazy('list_users')
+    #userpassestestmixin пользователь может изменять токо себя
 
 class UserDeleteView(DeleteView):
     model = User
