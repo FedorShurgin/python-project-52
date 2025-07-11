@@ -10,7 +10,7 @@ class StatusesView(ListView):
     model = StatusesModel
     template_name = 'statuses/statuses.html'
     context_object_name = 'statuses'
-    
+
 class StatusCreate(LoginRequiredMixin, CreateView):
     model = StatusesModel
     form_class = StatusesCreateForm
@@ -28,11 +28,7 @@ class UpdateStatus(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         obj = self.get_object()
         return obj.author == self.request.user
 
-class DeleteStatus(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class DeleteStatus(LoginRequiredMixin, DeleteView):
     model = StatusesModel
     template_name = 'statuses/delete.html'
     success_url = reverse_lazy('list_statuses')
-    
-    def test_func(self):
-        obj = self.get_object()
-        return obj.author == self.request.user

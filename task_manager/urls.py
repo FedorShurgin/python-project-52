@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.views.generic.base import TemplateView
 from django.contrib.auth.views import LoginView
 from django.urls import path, include
-from task_manager.views import logout_user, statuses, labels, tasks
+from task_manager.views import logout_user, labels
 
 
 urlpatterns = [
@@ -26,7 +26,7 @@ urlpatterns = [
     path('users/', include('task_manager.users.urls')),
     path('statuses/', include('task_manager.statuses.urls')),
     path('labels/', labels, name='labels'),
-    path('tasks/', tasks, name='tasks'),
+    path('tasks/', include('task_manager.tasks.urls')),
     path('login/', LoginView.as_view(template_name = 'login.html'), name='login'),
     path('logout/', logout_user, name='logout' ),
     path('admin/', admin.site.urls),

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+
+{% block content %}
+<h1 class="my-4">Задачи</h1>
+<a href={% url 'create_task' %}>Создать задачу</a>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Статус</th>
+            <th>Автор</th>
+            <th>Исполнитель</th>
+            <th>Дата создания</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <th>{{ task.id }}</th>
+            <th>{{ task.name }}</th>
+            <th>{{ task.status }}</th>
+            <th>{{ task.author }}</th>
+            <th>{{ task.executor }}</th>
+            <th>{{ task.date_create }}</th>
+            <th>
+              <a>Изменить</a><br>
+              <a>Удалить</a>
+            </th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
