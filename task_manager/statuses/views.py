@@ -23,10 +23,6 @@ class UpdateStatus(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'statuses/status.html'
     context_object_name = 'status'
     success_url = reverse_lazy('list_statuses')
-    
-    def test_func(self):
-        obj = self.get_object()
-        return obj.author == self.request.user
 
 class DeleteStatus(LoginRequiredMixin, DeleteView):
     model = StatusesModel
