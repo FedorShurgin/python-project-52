@@ -20,14 +20,14 @@
         {% for task in tasks %}
         <tr>
             <th>{{ task.id }}</th>
-            <th>{{ task.name }}</th>
+            <th><a href={% url 'viewing_task' task.pk %}>{{ task.name }}</a></th>
             <th>{{ task.status }}</th>
             <th>{{ task.author }}</th>
             <th>{{ task.executor }}</th>
             <th>{{ task.date_create }}</th>
             <th>
-              <a>Изменить</a><br>
-              <a>Удалить</a>
+              <a href={% url 'update_task' task.pk %}>Изменить</a><br>
+              <a href={% url 'delete_task' task.pk %}>Удалить</a>
             </th>
         </tr>
         {% endfor %}
