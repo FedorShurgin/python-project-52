@@ -3,7 +3,7 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 from task_manager.users.forms import CustomUserCreationForm, CustomUserUpdateForm
 from django.contrib.auth.models import User
 from django.views.generic import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 class SignUpView(CreateView):
@@ -18,13 +18,17 @@ class UsersView(ListView):
     context_object_name = 'users'
 
 
-class UpdateUser(LoginRequiredMixin, UpdateView):
+class UpdateUser(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = User
     form_class = CustomUserUpdateForm
     template_name = 'users/user.html'
     context_object_name = 'user'
     success_url = reverse_lazy('list_users')
     #userpassestestmixin пользователь может изменять токо себя
+    
+    def test_func(self):
+        user = self.get_object()
+        return self.request.user == user
 
 class UserDeleteView(DeleteView):
     model = User
