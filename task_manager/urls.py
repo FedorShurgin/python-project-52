@@ -18,14 +18,14 @@ from django.contrib import admin
 from django.views.generic.base import TemplateView
 from django.contrib.auth.views import LoginView
 from django.urls import path, include
-from task_manager.views import logout_user, labels
+from task_manager.views import logout_user
 
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name = 'index.html'), name='home'),
     path('users/', include('task_manager.users.urls')),
     path('statuses/', include('task_manager.statuses.urls')),
-    path('labels/', labels, name='labels'),
+    path('labels/', include('task_manager.labels.urls')),
     path('tasks/', include('task_manager.tasks.urls')),
     path('login/', LoginView.as_view(template_name = 'login.html'), name='login'),
     path('logout/', logout_user, name='logout' ),
