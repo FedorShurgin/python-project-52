@@ -3,7 +3,7 @@ from task_manager.statuses.models import StatusesModel
 from django.views.generic import CreateView, DeleteView, UpdateView
 from task_manager.statuses.forms import StatusesCreateForm
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 class StatusesView(ListView):
@@ -17,7 +17,7 @@ class StatusCreate(LoginRequiredMixin, CreateView):
     template_name = 'statuses/create.html'
     success_url = reverse_lazy('list_statuses')
 
-class UpdateStatus(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class UpdateStatus(LoginRequiredMixin, UpdateView):
     model = StatusesModel
     form_class = StatusesCreateForm
     template_name = 'statuses/status.html'
