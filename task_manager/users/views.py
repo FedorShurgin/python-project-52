@@ -4,6 +4,8 @@ from task_manager.users.forms import CustomUserCreationForm, CustomUserUpdateFor
 from django.contrib.auth.models import User
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib import messages
+from django.shortcuts import redirect
 
 
 class SignUpView(CreateView):
@@ -28,6 +30,10 @@ class UpdateUser(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         user = self.get_object()
         return self.request.user == user
+    
+    def handle_no_permission(self):
+        messages.error(self.request, "У вас нет прав для изменения другого пользователя.")
+        return redirect('list_users')
 
 class UserDeleteView(DeleteView):
     model = User
