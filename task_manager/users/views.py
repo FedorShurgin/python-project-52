@@ -24,7 +24,6 @@ class UpdateUser(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'users/user.html'
     context_object_name = 'user'
     success_url = reverse_lazy('list_users')
-    #userpassestestmixin пользователь может изменять токо себя
     
     def test_func(self):
         user = self.get_object()

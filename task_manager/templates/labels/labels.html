@@ -20,8 +20,8 @@
             <th>{{ label.name }}</th>
             <th>{{ label.date_create }}</th>
             <th>
-              <a>Изменить</a><br>
-              <a>Удалить</a>
+              <a href={% url 'update_label' label.pk %}>Изменить</a><br>
+              <a href={% url 'delete_label' label.pk %}>Удалить</a>
             </th>
         </tr>
         {% endfor %}
