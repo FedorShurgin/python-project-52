@@ -27,4 +27,5 @@ class UpdateStatus(LoginRequiredMixin, UpdateView):
 class DeleteStatus(LoginRequiredMixin, DeleteView):
     model = StatusesModel
     template_name = 'statuses/delete.html'
+    context_object_name = 'status'
     success_url = reverse_lazy('list_statuses')

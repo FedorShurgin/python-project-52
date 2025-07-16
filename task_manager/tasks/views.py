@@ -4,6 +4,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, DeleteView, UpdateView, DetailView
 from task_manager.tasks.forms import TasksCreateForm
 from django.urls import reverse_lazy
+from django.contrib import messages
+from django.shortcuts import redirect
 
 
 # Create your views here.
@@ -41,3 +43,7 @@ class TaskDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         obj = self.get_object()
         return obj.author == self.request.user
+    
+    def handle_no_permission(self):
+        messages.error(self.request, "Задачу может удалить только ее автор")
+        return redirect('list_tasks')
