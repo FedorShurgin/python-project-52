@@ -6,11 +6,14 @@ from task_manager.tasks.forms import TasksCreateForm
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import redirect
+from django_filters.views import FilterView
+from task_manager.tasks.filters import TasksFilter
 
 
 # Create your views here.
-class TasksView(ListView):
+class TasksView(FilterView):
     model = TasksModel
+    filterset_class = TasksFilter
     template_name = 'tasks/tasks.html'
     context_object_name = 'tasks'
 
