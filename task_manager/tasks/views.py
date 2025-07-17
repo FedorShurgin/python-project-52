@@ -1,4 +1,3 @@
-from django.views.generic import ListView
 from task_manager.tasks.models import TasksModel
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, DeleteView, UpdateView, DetailView
