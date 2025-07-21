@@ -23,6 +23,6 @@ class TasksModel(models.Model):
 def protect_label(sender, instance, **kwargs):
     if instance.tasks.exists():
         raise ProtectedError(
-            "Здесь будет сообщение!",
+            "Невозможно удалить метку, потому что она используется",
             instance.tasks.all()
         )

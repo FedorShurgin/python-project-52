@@ -3,6 +3,8 @@ from task_manager.labels.models import LabelsModel
 from task_manager.labels.forms import LabelsCreateForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.contrib import messages
+from django.shortcuts import redirect
 
 # Create your views here.
 class LabelsView(ListView):
@@ -27,3 +29,10 @@ class LabelDelete(LoginRequiredMixin, DeleteView):
     template_name = 'labels/delete.html'
     context_object_name = 'label'
     success_url = reverse_lazy('list_labels')
+    
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.tasks.exists():
+            messages.error(request, 'Невозможно удалить метку, потому что она используется')
+            return redirect('list_labels')
+        return super().post(request, *args, **kwargs)
