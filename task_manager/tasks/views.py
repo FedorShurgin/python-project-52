@@ -15,6 +15,11 @@ class TasksView(FilterView):
     filterset_class = TasksFilter
     template_name = 'tasks/tasks.html'
     context_object_name = 'tasks'
+    
+    def get_filterset_kwargs(self, filterset_class=None, **kwargs):
+        kwargs = super().get_filterset_kwargs(filterset_class, **kwargs)
+        kwargs['request'] = self.request
+        return kwargs
 
 class TasksCreate(LoginRequiredMixin, CreateView):
     model = TasksModel
@@ -49,3 +54,4 @@ class TaskDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def handle_no_permission(self):
         messages.error(self.request, "Задачу может удалить только ее автор")
         return redirect('list_tasks')
+      
