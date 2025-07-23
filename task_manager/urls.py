@@ -22,12 +22,12 @@ from task_manager.views import logout_user
 
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name = 'index.html'), name='home'),
+    path('', TemplateView.as_view(template_name='index.html'), name='home'),
     path('users/', include('task_manager.users.urls')),
     path('statuses/', include('task_manager.statuses.urls')),
     path('labels/', include('task_manager.labels.urls')),
     path('tasks/', include('task_manager.tasks.urls')),
-    path('login/', LoginView.as_view(template_name = 'login.html'), name='login'),
+    path('login/', LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', logout_user, name='logout' ),
     path('admin/', admin.site.urls),
 ]

@@ -9,43 +9,41 @@ from django_filters.views import FilterView
 from task_manager.tasks.filters import TasksFilter
 
 
-# Create your views here.
 class TasksView(FilterView):
     model = TasksModel
     filterset_class = TasksFilter
     template_name = 'tasks/tasks.html'
     context_object_name = 'tasks'
     
-    def get_filterset_kwargs(self, filterset_class=None, **kwargs):
-        kwargs = super().get_filterset_kwargs(filterset_class, **kwargs)
-        kwargs['request'] = self.request
-        return kwargs
 
-class TasksCreate(LoginRequiredMixin, CreateView):
+class TasksCreateView(LoginRequiredMixin, CreateView):
     model = TasksModel
     form_class = TasksCreateForm
     template_name = 'tasks/create.html'
-    success_url = reverse_lazy('list_tasks')
+    success_url = reverse_lazy('tasks')
     
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
+
 class TaskView(LoginRequiredMixin, DetailView):
     model = TasksModel
-    template_name = 'tasks/task_view.html'
+    template_name = 'tasks/task.html'
     context_object_name  = 'task'
 
-class TaskUpdate(LoginRequiredMixin, UpdateView):
+
+class TaskUpdateView(LoginRequiredMixin, UpdateView):
     model = TasksModel
     form_class = TasksCreateForm
-    template_name = 'tasks/task_update.html'
-    success_url = reverse_lazy('list_tasks')
+    template_name = 'tasks/update.html'
+    success_url = reverse_lazy('tasks')
 
-class TaskDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+
+class TaskDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = TasksModel
-    template_name = 'tasks/task_delete.html'
-    success_url = reverse_lazy('list_tasks')
+    template_name = 'tasks/delete.html'
+    success_url = reverse_lazy('tasks')
     
     def test_func(self):
         obj = self.get_object()
@@ -53,5 +51,4 @@ class TaskDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     
     def handle_no_permission(self):
         messages.error(self.request, "Задачу может удалить только ее автор")
-        return redirect('list_tasks')
-      
+        return redirect('tasks')

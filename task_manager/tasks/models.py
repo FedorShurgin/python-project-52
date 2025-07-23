@@ -2,11 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from task_manager.statuses.models import StatusesModel
 from task_manager.labels.models import LabelsModel
-from django.db.models.deletion import ProtectedError
-from django.db.models.signals import pre_delete
-from django.dispatch import receiver
 
-# Create your models here.
+
 class TasksModel(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -18,11 +15,3 @@ class TasksModel(models.Model):
 
     def __str__(self):
         return self.name
-
-@receiver(pre_delete, sender=LabelsModel)
-def protect_label(sender, instance, **kwargs):
-    if instance.tasks.exists():
-        raise ProtectedError(
-            "Невозможно удалить метку, потому что она используется",
-            instance.tasks.all()
-        )

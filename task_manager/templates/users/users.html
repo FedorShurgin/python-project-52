@@ -22,8 +22,8 @@
             <th>{{ user.get_full_name }}</th>
             <th>{{ user.date_joined }}</th>
             <th>
-              <a href={% url 'update_user' user.pk %}>Изменить</a><br>
-              <a href={% url 'delete_user' user.pk %}>Удалить</a>
+              <a href={% url 'update' user.pk %}>Изменить</a><br>
+              <a href={% url 'delete' user.pk %}>Удалить</a>
             </th>
         </tr>
         {% endfor %}

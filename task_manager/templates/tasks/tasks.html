@@ -4,23 +4,14 @@
 
 {% block content %}
 <h1 class="my-4">Задачи</h1>
-<a class="btn btn-primary nb-3" href={% url 'create_task' %} role="button">Создать задачу</a>
+<a class="btn btn-primary nb-3" href={% url 'create' %} role="button">Создать задачу</a>
 <div class="card mb-3">
     <div class="card-body bg-light">
-        <form class="form-inline center" method="get">
-            <div class="mb-3">
-                <label class="form-label" for="id_status">Статус</label>
-                {{ filter.form.status }}
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="id_status">Исполнитель</label>
-                {{ filter.form.executor }}
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="id_status">Метка</label>
-                {{ filter.form.labels }}
-            </div>
-            <button type="submit" class="btn btn-primary mt-3">Показать</button>
+        <form method="get">
+            <table border="1">
+                {% bootstrap_form filter.form %}
+            </table>
+                {% bootstrap_button button_type="submit" content="Показать" %}
         </form>
     </div>
 </div>
@@ -39,14 +30,14 @@
         {% for task in tasks %}
         <tr>
             <th>{{ task.id }}</th>
-            <th><a href={% url 'viewing_task' task.pk %}>{{ task.name }}</a></th>
+            <th><a href={% url 'task' task.pk %}>{{ task.name }}</a></th>
             <th>{{ task.status }}</th>
             <th>{{ task.author }}</th>
             <th>{{ task.executor }}</th>
             <th>{{ task.date_create }}</th>
             <th>
-              <a href={% url 'update_task' task.pk %}>Изменить</a><br>
-              <a href={% url 'delete_task' task.pk %}>Удалить</a>
+              <a href={% url 'update' task.pk %}>Изменить</a><br>
+              <a href={% url 'delete' task.pk %}>Удалить</a>
             </th>
         </tr>
         {% endfor %}

@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1 class="my-4">Метки</h1>
-<a href={% url 'create_labels' %}>Создать метку</a>
+<a href={% url 'create' %}>Создать метку</a>
 <table>
     <thead>
         <tr>
@@ -20,8 +20,8 @@
             <th>{{ label.name }}</th>
             <th>{{ label.date_create }}</th>
             <th>
-              <a href={% url 'update_label' label.pk %}>Изменить</a><br>
-              <a href={% url 'delete_label' label.pk %}>Удалить</a>
+              <a href={% url 'update' label.pk %}>Изменить</a><br>
+              <a href={% url 'delete' label.pk %}>Удалить</a>
             </th>
         </tr>
         {% endfor %}

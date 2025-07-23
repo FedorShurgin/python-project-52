@@ -2,13 +2,13 @@ from django_filters import FilterSet, BooleanFilter
 from task_manager.tasks.models import TasksModel
 from django import forms
 
+
 class TasksFilter(FilterSet):
-    class TasksFilter(FilterSet):
-        my_tasks = BooleanFilter(
-            method='filter_my_tasks',
-            label='',
-            widget=forms.CheckboxInput
-        )
+    my_tasks = BooleanFilter(
+        method='filter_my_tasks',
+        label='Только свои задачи',
+        widget=forms.CheckboxInput
+    )
     
     def filter_my_tasks(self, queryset, name, value):
         if value:
@@ -17,4 +17,4 @@ class TasksFilter(FilterSet):
     
     class Meta:
         model = TasksModel
-        fields = ['status', 'executor', 'labels']
+        fields = ['status', 'executor', 'labels', 'my_tasks']

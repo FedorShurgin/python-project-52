@@ -13,27 +13,32 @@ class SignUpView(CreateView):
     success_url = reverse_lazy('login')
     template_name = 'users/create.html'
 
+
 class UsersView(ListView):
     model=User
     template_name = 'users/users.html'
     context_object_name = 'users'
 
-class UpdateUser(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class UsersUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = User
     form_class = CustomUserCreationForm
     template_name = 'users/user.html'
     context_object_name = 'user'
-    success_url = reverse_lazy('list_users')
+    success_url = reverse_lazy('users')
     
     def test_func(self):
         user = self.get_object()
         return self.request.user == user
     
     def handle_no_permission(self):
-        messages.error(self.request, "У вас нет прав для изменения другого пользователя.")
-        return redirect('list_users')
+        messages.error(
+            self.request,
+            "У вас нет прав для изменения другого пользователя."
+        )
+        return redirect('users')
 
-class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+
+class UsersDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = User
     template_name = 'users/delete.html'
     success_url = reverse_lazy('home')
@@ -41,7 +46,10 @@ class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         user = self.get_object()
         return self.request.user == user
-    
+
     def handle_no_permission(self):
-        messages.error(self.request, "У вас нет прав для изменения другого пользователя.")
-        return redirect('list_users')
+        messages.error(
+            self.request,
+            "У вас нет прав для изменения другого пользователя."
+        )
+        return redirect('users')
