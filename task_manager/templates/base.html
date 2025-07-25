@@ -17,7 +17,7 @@
     <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-            <a class="nav-link" href={% url 'users' %}>Пользователи</a>
+            <a class="nav-link" href={% url 'users:users' %}>Пользователи</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href={% url 'statuses' %}>Статусы</a>
@@ -39,13 +39,13 @@
     <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
         <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-            <a class="nav-link" href={% url 'users'  %}>Пользователи</a>
+            <a class="nav-link" href={% url 'users:users'  %}>Пользователи</a>
           </li>
         <li class="nav-item">
             <a class="nav-link" href={% url 'login' %}>Вход</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href={% url 'create' %}>Регистрация</a>
+            <a class="nav-link" href={% url 'users:create' %}>Регистрация</a>
         </li>
           
         </ul>

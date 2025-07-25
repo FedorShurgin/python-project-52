@@ -24,7 +24,7 @@ class UsersUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = CustomUserCreationForm
     template_name = 'users/user.html'
     context_object_name = 'user'
-    success_url = reverse_lazy('users')
+    success_url = reverse_lazy('users:users')
     
     def test_func(self):
         user = self.get_object()
@@ -35,7 +35,7 @@ class UsersUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             self.request,
             "У вас нет прав для изменения другого пользователя."
         )
-        return redirect('users')
+        return redirect('users:users')
 
 
 class UsersDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -52,4 +52,4 @@ class UsersDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             self.request,
             "У вас нет прав для изменения другого пользователя."
         )
-        return redirect('users')
+        return redirect('users:users')

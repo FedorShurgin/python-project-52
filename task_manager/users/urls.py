@@ -2,6 +2,9 @@ from django.urls import path
 from .views import SignUpView, UsersView, UsersDeleteView, UsersUpdateView
 
 
+app_name = 'users'
+
+
 urlpatterns = [
     path('',UsersView.as_view(), name='users'),
     path('create/', SignUpView.as_view(), name='create'),
