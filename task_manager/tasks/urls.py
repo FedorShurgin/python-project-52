@@ -2,6 +2,9 @@ from django.urls import path
 from task_manager.tasks.views import TasksView, TasksCreateView, TaskView, TaskUpdateView, TaskDeleteView
 
 
+app_name = 'tasks'
+
+
 urlpatterns = [
     path('', TasksView.as_view(), name='tasks'),
     path('create/', TasksCreateView.as_view(), name='create'),

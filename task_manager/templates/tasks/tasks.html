@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1 class="my-4">Задачи</h1>
-<a class="btn btn-primary nb-3" href={% url 'create' %} role="button">Создать задачу</a>
+<a class="btn btn-primary nb-3" href={% url 'tasks:create' %} role="button">Создать задачу</a>
 <div class="card mb-3">
     <div class="card-body bg-light">
         <form method="get">
@@ -30,14 +30,14 @@
         {% for task in tasks %}
         <tr>
             <th>{{ task.id }}</th>
-            <th><a href={% url 'task' task.pk %}>{{ task.name }}</a></th>
+            <th><a href={% url 'tasks:task' task.pk %}>{{ task.name }}</a></th>
             <th>{{ task.status }}</th>
             <th>{{ task.author }}</th>
             <th>{{ task.executor }}</th>
             <th>{{ task.date_create }}</th>
             <th>
-              <a href={% url 'update' task.pk %}>Изменить</a><br>
-              <a href={% url 'delete' task.pk %}>Удалить</a>
+              <a href={% url 'tasks:update' task.pk %}>Изменить</a><br>
+              <a href={% url 'tasks:delete' task.pk %}>Удалить</a>
             </th>
         </tr>
         {% endfor %}
