@@ -26,3 +26,9 @@ lint:
 
 shell:
 	uv run manage.py shell
+
+fix:
+	uv run ruff check --fix task_manager
+
+check:
+	uv run ruff check task_manager

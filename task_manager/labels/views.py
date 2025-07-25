@@ -1,10 +1,11 @@
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from task_manager.labels.models import LabelsModel
-from task_manager.labels.forms import LabelsCreateForm
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+
+from task_manager.labels.forms import LabelsCreateForm
+from task_manager.labels.models import LabelsModel
 
 
 class LabelsView(ListView):
@@ -33,7 +34,6 @@ class LabelsDeleteView(LoginRequiredMixin, DeleteView):
     context_object_name = 'label'
     success_url = reverse_lazy('labels:labels')
    
-
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         if self.object.tasks.exists():

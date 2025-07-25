@@ -1,12 +1,13 @@
-from task_manager.tasks.models import TasksModel
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import CreateView, DeleteView, UpdateView, DetailView
-from task_manager.tasks.forms import TasksCreateForm
-from django.urls import reverse_lazy
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
 from django_filters.views import FilterView
+
 from task_manager.tasks.filters import TasksFilter
+from task_manager.tasks.forms import TasksCreateForm
+from task_manager.tasks.models import TasksModel
 
 
 class TasksView(FilterView):
@@ -30,7 +31,7 @@ class TasksCreateView(LoginRequiredMixin, CreateView):
 class TaskView(LoginRequiredMixin, DetailView):
     model = TasksModel
     template_name = 'tasks/task.html'
-    context_object_name  = 'task'
+    context_object_name = 'task'
 
 
 class TaskUpdateView(LoginRequiredMixin, UpdateView):

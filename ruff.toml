@@ -1,8 +1,8 @@
 line-length = 120
 
 [lint.per-file-ignores]
-  # init modules can contain the local imports, logic, unused imports
 "__init__.py" = ["F401"]
+"**/migrations/*.py" = ["E501"]
 
 [lint]
 preview = true

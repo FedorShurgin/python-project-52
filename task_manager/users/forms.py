@@ -17,8 +17,8 @@ class CustomUserCreationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['first_name'].required=True
-        self.fields['last_name'].required=True
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
 
     def clean_username(self):
 

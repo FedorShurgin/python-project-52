@@ -1,6 +1,7 @@
-from django_filters import FilterSet, BooleanFilter
-from task_manager.tasks.models import TasksModel
 from django import forms
+from django_filters import BooleanFilter, FilterSet
+
+from task_manager.tasks.models import TasksModel
 
 
 class TasksFilter(FilterSet):

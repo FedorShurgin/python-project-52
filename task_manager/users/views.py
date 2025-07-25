@@ -1,11 +1,11 @@
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, UpdateView
-from task_manager.users.forms import CustomUserCreationForm
-from django.contrib.auth.models import User
-from django.views.generic import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+
+from task_manager.users.forms import CustomUserCreationForm
 
 
 class SignUpView(CreateView):
@@ -15,9 +15,10 @@ class SignUpView(CreateView):
 
 
 class UsersView(ListView):
-    model=User
+    model = User
     template_name = 'users/users.html'
     context_object_name = 'users'
+
 
 class UsersUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = User
