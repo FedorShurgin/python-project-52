@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+import rollbar
 
 import dj_database_url
 from dotenv import load_dotenv
@@ -66,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ]
 
 ROOT_URLCONF = 'task_manager.urls'
@@ -121,6 +123,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+rollbar.init(
+  access_token=os.getenv('ROLLBAR_TOKEN'),
+  environment='testenv',
+  code_version='1.0'
+)
+rollbar.report_message('Rollbar is configured correctly', 'info')
+
+try:
+    a = None
+    a.hello()
+except:
+    rollbar.report_exc_info()
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
