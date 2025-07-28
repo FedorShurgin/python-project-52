@@ -3,11 +3,12 @@
 
 
 {% block content %}
+<div class="container wrapper flex-grow-1">
 <h1 class="my-4">Задачи</h1>
 <a class="btn btn-primary nb-3" href={% url 'tasks:create' %} role="button">Создать задачу</a>
 <div class="card mb-3">
     <div class="card-body bg-light">
-        <form method="get">
+        <form class="form-inline center:"  "" method="get">
             <table border="1">
                 {% bootstrap_form filter.form %}
             </table>
@@ -15,7 +16,7 @@
         </form>
     </div>
 </div>
-<table>
+<table class="table table-striped">
     <thead>
         <tr>
             <th>ID</th>
@@ -43,5 +44,5 @@
         {% endfor %}
     </tbody>
 </table>
-
+</div>
 {% endblock %}

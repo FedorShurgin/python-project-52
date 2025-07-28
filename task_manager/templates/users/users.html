@@ -1,33 +1,33 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 
-
 {% block content %}
-
-<h1 class="my-4">Пользователи</h1>
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Имя пользователя</th>
-            <th>Полное имя</th>
-            <th>Дата создания</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <th>{{ user.id }}</th>
-            <th>{{ user.username }}</th>
-            <th>{{ user.get_full_name }}</th>
-            <th>{{ user.date_joined }}</th>
-            <th>
-              <a href={% url 'users:update' user.pk %}>Изменить</a><br>
-              <a href={% url 'users:delete' user.pk %}>Удалить</a>
-            </th>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
+<div class="container wrapper flex-grow-1">
+    <h1 class="my-4">Пользователи</h1>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Имя пользователя</th>
+                <th>Полное имя</th>
+                <th>Дата создания</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.get_full_name }}</td>
+                <td>{{ user.date_joined|date:"d.m.Y H:i" }}</td>
+                <td>
+                    <a href="{% url 'users:update' user.pk %}">Изменить</a><br>
+                    <a href="{% url 'users:delete' user.pk %}">Удалить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

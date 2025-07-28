@@ -2,14 +2,16 @@
 {% load django_bootstrap5 %}
 
 {% block content %}
-<h1 class="my-4">Регистрация</h1>
+<div class="container wrapper flex-grow-1">
+    <h1 class="my-4">Регистрация</h1>
 
-<form method="post">
-    {% csrf_token %}
-    <table border="1">
-        {% bootstrap_form form %}
-    </table>
-        {% bootstrap_button button_type="submit" content="Зарегистрировать" %}
+    <form method="post">
+        {% csrf_token %}
+        <table border="1">
+            {% bootstrap_form form %}
+        </table>
+            {% bootstrap_button button_type="submit" content="Зарегистрировать" %}
 
-</form>
+    </form>
+</div>
 {% endblock %}

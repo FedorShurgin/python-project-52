@@ -123,18 +123,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-rollbar.init(
-  access_token=os.getenv('ROLLBAR_TOKEN'),
-  environment='testenv',
-  code_version='1.0'
-)
-rollbar.report_message('Rollbar is configured correctly', 'info')
+if not DEBUG:
+    rollbar.init(
+        access_token=os.getenv('ROLLBAR_TOKEN'),
+        environment='prod',
+        code_version='1.0',
+    )
+    rollbar.report_message('Rollbar is configured correctly', 'info')
 
-try:
-    a = None
-    a.hello()
-except:
-    rollbar.report_exc_info()
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
