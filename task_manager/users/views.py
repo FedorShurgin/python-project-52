@@ -23,7 +23,7 @@ class UsersView(ListView):
 class UsersUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = User
     form_class = CustomUserCreationForm
-    template_name = 'users/user.html'
+    template_name = 'users/update.html'
     context_object_name = 'user'
     success_url = reverse_lazy('users:users')
     

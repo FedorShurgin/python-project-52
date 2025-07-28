@@ -22,7 +22,7 @@ class StatusesCreateView(LoginRequiredMixin, CreateView):
 class StatusesUpdateView(LoginRequiredMixin, UpdateView):
     model = StatusesModel
     form_class = StatusesCreateForm
-    template_name = 'statuses/status.html'
+    template_name = 'statuses/update.html'
     context_object_name = 'status'
     success_url = reverse_lazy('statuses:statuses')
 
