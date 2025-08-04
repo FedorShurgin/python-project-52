@@ -118,8 +118,8 @@ else:
         'default': dj_database_url.config(
             conn_max_age=600,
             conn_health_checks=True,
-            sslmode='require',
-            engine='django.db.backends.postgresql_psycopg2'
+            ssl_require=True,
+            engine='django.db.backends.postgresql'
         )
     }
 
