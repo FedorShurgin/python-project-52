@@ -107,7 +107,6 @@ WSGI_APPLICATION = 'task_manager.wsgi.application'
 IS_DEVELOPMENT = os.getenv('DJANGO_ENV') == 'development'
 
 if IS_DEVELOPMENT:
-    # Настройки для разработки (SQLite)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -116,7 +115,12 @@ if IS_DEVELOPMENT:
     }
 else:
     DATABASES = {
-        'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
+        'default': dj_database_url.config(
+            conn_max_age=600,
+            conn_health_checks=True,
+            sslmode='require',
+            engine='django.db.backends.postgresql_psycopg2'
+        )
     }
 
 # Password validation
