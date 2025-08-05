@@ -13,5 +13,5 @@ class TasksCreateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         self.fields['executor'].label_from_instance = lambda user: (
-            f"{user.first_name} {user.last_name}".strip() or user.username
+            f"{user.first_name} {user.last_name}"
         )
