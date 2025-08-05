@@ -50,6 +50,7 @@ class UsersUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class UsersDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = User
     template_name = 'users/delete.html'
+    context_object_name = 'user'
     success_url = reverse_lazy('users:users')
 
     def test_func(self):
@@ -62,3 +63,7 @@ class UsersDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             "У вас нет прав для изменения другого пользователя."
         )
         return redirect('users:users')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Пользователь успешно удален")
+        return super().delete(request, *args, **kwargs)
