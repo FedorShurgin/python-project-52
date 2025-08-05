@@ -55,7 +55,7 @@ class UsersDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         user = self.get_object()
-        return self.request.user == user
+        return self.request.user.id == user.id
 
     def handle_no_permission(self):
         messages.error(
