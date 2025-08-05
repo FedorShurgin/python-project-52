@@ -41,6 +41,10 @@ class UsersUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             "У вас нет прав для изменения другого пользователя."
         )
         return redirect('users:users')
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Пользователь успешно изменен")
+        return super().form_valid(form)
 
 
 class UsersDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
