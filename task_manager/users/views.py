@@ -64,6 +64,6 @@ class UsersDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         )
         return redirect('users:users')
 
-    def delete(self, request, *args, **kwargs):
-        messages.info(request, "Пользователь успешно удален")
-        return super().delete(request, *args, **kwargs)
+    def form_valid(self, form):
+        messages.success(self.request, "Пользователь успешно удален")
+        return super().form_valid(form)
