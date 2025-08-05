@@ -8,10 +8,8 @@
 <a class="btn btn-primary nb-3" href={% url 'tasks:create' %} role="button">Создать задачу</a>
 <div class="card mb-3">
     <div class="card-body bg-light">
-        <form class="form-inline center:"  "" method="get">
-            <table border="1">
+        <form class="form-inline center" method="get">
                 {% bootstrap_form filter.form %}
-            </table>
                 {% bootstrap_button button_type="submit" content="Показать" %}
         </form>
     </div>
