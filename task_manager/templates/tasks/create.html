@@ -7,9 +7,7 @@
 
     <form method="post">
         {% csrf_token %}
-        <table border="1">
             {% bootstrap_form form %}
-        </table>
             {% bootstrap_button button_type="submit" content="Создать" %}
 
     </form>
