@@ -6,33 +6,35 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from task_manager.labels.forms import LabelsCreateForm
 from task_manager.labels.models import LabelsModel
+from task_manager.base import SuccessMessageMixin
 
 
-class LabelsView(ListView):
+class BaseLabelsView(LoginRequiredMixin, SuccessMessageMixin):
     model = LabelsModel
+    success_url = reverse_lazy('labels:labels')
+
+
+class LabelsView(BaseLabelsView, ListView):
     template_name = 'labels/labels.html'
     context_object_name = 'labels'
 
 
-class LabelsCreateView(LoginRequiredMixin, CreateView):
-    model = LabelsModel
+class LabelsCreateView(BaseLabelsView, CreateView):
     form_class = LabelsCreateForm
     template_name = 'labels/create.html'
-    success_url = reverse_lazy('labels:labels')
+    success_message = 'Метка успешно создана'
 
 
-class LabelsUpdateView(LoginRequiredMixin, UpdateView):
-    model = LabelsModel
+class LabelsUpdateView(BaseLabelsView, UpdateView):
     form_class = LabelsCreateForm
     template_name = 'labels/update.html'
-    success_url = reverse_lazy('labels:labels')
+    success_message = 'Метка успешно изменена'
 
 
-class LabelsDeleteView(LoginRequiredMixin, DeleteView):
-    model = LabelsModel
+class LabelsDeleteView(BaseLabelsView, DeleteView):
     template_name = 'labels/delete.html'
     context_object_name = 'label'
-    success_url = reverse_lazy('labels:labels')
+    success_message = 'Метка успешно удалена'
    
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
