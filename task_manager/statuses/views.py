@@ -34,4 +34,4 @@ class StatusesUpdateView(BaseStatusView, UpdateView):
 class StatusesDeleteView(BaseStatusView, DeleteView):
     template_name = 'statuses/delete.html'
     context_object_name = 'status'
-    success_message = "Статус успешно удалён"
+    success_message = "Статус успешно удален"
