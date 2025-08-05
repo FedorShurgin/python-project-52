@@ -50,7 +50,7 @@ class UsersUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class UsersDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = User
     template_name = 'users/delete.html'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('users:users')
 
     def test_func(self):
         user = self.get_object()
