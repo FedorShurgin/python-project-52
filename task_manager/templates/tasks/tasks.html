@@ -32,7 +32,7 @@
             <th><a href={% url 'tasks:task' task.pk %}>{{ task.name }}</a></th>
             <th>{{ task.status }}</th>
             <th>{{ task.author }}</th>
-            <th>{{ task.executor }}</th>
+            <th>{{ task.executor.get_full_name }}</th>
             <th>{{ task.date_create }}</th>
             <th>
               <a href={% url 'tasks:update' task.pk %}>Изменить</a><br>
