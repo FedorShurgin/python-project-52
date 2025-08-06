@@ -11,6 +11,10 @@ class TasksFilter(FilterSet):
         widget=forms.CheckboxInput
     )
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.filters['labels'].label = 'Метка'
+    
     def filter_my_tasks(self, queryset, name, value):
         if value:
             return queryset.filter(author=self.request.user)
