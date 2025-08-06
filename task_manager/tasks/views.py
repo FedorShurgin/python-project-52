@@ -33,7 +33,7 @@ class TasksCreateView(BaseTasksView, CreateView):
         return super().form_valid(form)
 
 
-class TaskView(BaseException, DetailView):
+class TaskView(BaseTasksView, DetailView):
     template_name = 'tasks/task.html'
     context_object_name = 'task'
 
