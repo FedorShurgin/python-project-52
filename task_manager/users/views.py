@@ -43,7 +43,10 @@ class UsersUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return redirect('users:users')
     
     def form_valid(self, form):
-        messages.success(self.request, "Пользователь успешно изменен")
+        messages.success(
+            self.request,
+            "Пользователь успешно изменен"
+        )
         return super().form_valid(form)
 
 

@@ -39,6 +39,9 @@ class LabelsDeleteView(BaseLabelsView, DeleteView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         if self.object.tasks.exists():
-            messages.error(request, 'Невозможно удалить метку, потому что она используется')
+            messages.error(
+                request,
+                'Невозможно удалить метку, потому что она используется'
+            )
             return redirect('labels:labels')
         return super().post(request, *args, **kwargs)

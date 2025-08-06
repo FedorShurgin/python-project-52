@@ -28,12 +28,21 @@ class CustomUserCreationForm(UserCreationForm):
             if username == self.instance.username:
                 return username
 
-            if User.objects.filter(username__iexact=username).exclude(pk=self.instance.pk).exists():
-                raise ValidationError("Пользователь с таким именем уже существует")
+            if (
+                User.objects
+                .filter(username__iexact=username)
+                .exclude(pk=self.instance.pk)
+                .exists()
+            ):
+                raise ValidationError(
+                    "Пользователь с таким именем уже существует"
+                )
         
             return username
 
         if User.objects.filter(username__iexact=username).exists():
-            raise ValidationError("Пользователь с таким именем уже существует")
+            raise ValidationError(
+                "Пользователь с таким именем уже существует"
+            )
 
         return username
