@@ -4,9 +4,9 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
+from task_manager.base import SuccessMessageMixin
 from task_manager.labels.forms import LabelsCreateForm
 from task_manager.labels.models import LabelsModel
-from task_manager.base import SuccessMessageMixin
 
 
 class BaseLabelsView(LoginRequiredMixin, SuccessMessageMixin):

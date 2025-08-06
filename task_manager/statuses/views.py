@@ -2,10 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-
+from task_manager.base import SuccessMessageMixin
 from task_manager.statuses.forms import StatusesCreateForm
 from task_manager.statuses.models import StatusesModel
-from task_manager.base import SuccessMessageMixin
 
 
 class BaseStatusView(LoginRequiredMixin, SuccessMessageMixin):

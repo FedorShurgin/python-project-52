@@ -18,8 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic.base import TemplateView
 
-from task_manager.views import logout_user
-from task_manager.views import MyLoginView
+from task_manager.views import MyLoginView, logout_user
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='home'),

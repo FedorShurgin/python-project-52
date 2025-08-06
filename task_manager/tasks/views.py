@@ -5,16 +5,15 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
 from django_filters.views import FilterView
 
+from task_manager.base import SuccessMessageMixin
 from task_manager.tasks.filters import TasksFilter
 from task_manager.tasks.forms import TasksCreateForm
 from task_manager.tasks.models import TasksModel
-from task_manager.base import SuccessMessageMixin
 
 
 class BaseTasksView(LoginRequiredMixin, SuccessMessageMixin):
     model = TasksModel
     success_url = reverse_lazy('tasks:tasks')
-
 
 
 class TasksView(BaseTasksView, FilterView):
@@ -42,7 +41,6 @@ class TaskUpdateView(BaseTasksView, UpdateView):
     form_class = TasksCreateForm
     template_name = 'tasks/update.html'
     success_message = 'Задача успешно изменена'
-
 
 
 class TaskDeleteView(BaseTasksView, UserPassesTestMixin, DeleteView):
