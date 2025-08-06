@@ -1,6 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.contrib import messages
+from django.shortcuts import redirect
+
 
 from task_manager.base import SuccessMessageMixin
 from task_manager.statuses.forms import StatusesCreateForm
@@ -34,3 +37,10 @@ class StatusesDeleteView(BaseStatusView, DeleteView):
     template_name = 'statuses/delete.html'
     context_object_name = 'status'
     success_message = "Статус успешно удален"
+    
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.tasksmodel_set.exists():
+            messages.error(request, 'Невозможно удалить статус, потому что он используется')
+            return redirect('statuses:statuses')
+        return super().post(request, *args, **kwargs)
