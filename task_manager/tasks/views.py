@@ -8,43 +8,46 @@ from django_filters.views import FilterView
 from task_manager.tasks.filters import TasksFilter
 from task_manager.tasks.forms import TasksCreateForm
 from task_manager.tasks.models import TasksModel
+from task_manager.base import SuccessMessageMixin
 
 
-class TasksView(FilterView):
+class BaseTasksView(LoginRequiredMixin, SuccessMessageMixin):
     model = TasksModel
+    success_url = reverse_lazy('tasks:tasks')
+
+
+
+class TasksView(BaseTasksView, FilterView):
     filterset_class = TasksFilter
     template_name = 'tasks/tasks.html'
     context_object_name = 'tasks'
     
 
-class TasksCreateView(LoginRequiredMixin, CreateView):
-    model = TasksModel
+class TasksCreateView(BaseTasksView, CreateView):
     form_class = TasksCreateForm
     template_name = 'tasks/create.html'
-    success_url = reverse_lazy('tasks:tasks')
+    success_message = 'Задача успешно создана'
     
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
 
-class TaskView(LoginRequiredMixin, DetailView):
-    model = TasksModel
+class TaskView(BaseException, DetailView):
     template_name = 'tasks/task.html'
     context_object_name = 'task'
 
 
-class TaskUpdateView(LoginRequiredMixin, UpdateView):
-    model = TasksModel
+class TaskUpdateView(BaseTasksView, UpdateView):
     form_class = TasksCreateForm
     template_name = 'tasks/update.html'
-    success_url = reverse_lazy('tasks:tasks')
+    success_message = 'Задача успешно изменена'
 
 
-class TaskDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = TasksModel
+
+class TaskDeleteView(BaseTasksView, UserPassesTestMixin, DeleteView):
     template_name = 'tasks/delete.html'
-    success_url = reverse_lazy('tasks:tasks')
+    success_message = 'Задача успешно удалена'
     
     def test_func(self):
         obj = self.get_object()
