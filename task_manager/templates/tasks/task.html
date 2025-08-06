@@ -20,7 +20,7 @@
       <div class="container">
         <div class="row p-1">
           <div class="col">Автор</div>
-          <div class="col">{{ task.author }}</div>
+          <div class="col">{{ task.author.get_full_name }}</div>
         </div>
         <div class="row p-1">
           <div class="col">Исполнитель</div>
@@ -32,7 +32,7 @@
         </div>
         <div class="row p-1">
           <div class="col">Дата создания</div>
-          <div class="col">{{ task.date_create }}</div>
+          <div class="col">{{ task.date_create|date:"d.m.Y H:i" }}</div>
         </div>
         <div class="row p-1">
           <div class="col">
