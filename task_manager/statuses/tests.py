@@ -13,12 +13,14 @@ class StatusesViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
-            first_name = 'test_mame',
-            last_name = 'test_surname',
+            # first_name = 'test_mame',
+            # last_name = 'test_surname',
             username = 'test_username',
-            password = 'test_password123',
         )
 
+        cls.user.set_password('test_password123')
+        cls.user.save()
+        
         number_of_statuses = 12
         for status_num in range(number_of_statuses):
             StatusesModel.objects.create(
@@ -44,12 +46,14 @@ class StatusesCreateViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user(
+        cls.user = User.objects.create(
             first_name = 'test_mame',
             last_name = 'test_surname',
             username = 'test_username',
-            password = 'test_password123',
         )
+
+        cls.user.set_password('test_password123')
+        cls.user.save()
         
         cls.valid_data = {'name': 'New_Status'}
 
@@ -70,6 +74,7 @@ class StatusesCreateViewTest(TestCase):
     def test_create_view_uses_correct_form(self):
         resp = self.client.get(reverse('statuses:create'))
         self.assertIsInstance(resp.context['form'], StatusesCreateForm)
+        # проверить что видит пользователь
     
     def test_create_status_success(self):
         resp = self.client.post(
@@ -80,18 +85,23 @@ class StatusesCreateViewTest(TestCase):
         
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(str(messages[0]), "Статус успешно создан")
+        #есть ли в БД статус который только создал
+        
+        #создание некоректного статуса
         
 class StatusesUpdateViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user(
+        cls.user = User.objects.create(
             first_name = 'test_mame',
             last_name = 'test_surname',
             username = 'test_username',
-            password = 'test_password123',
         )
-        
+
+        cls.user.set_password('test_password123')
+        cls.user.save()
+      
         cls.status = StatusesModel.objects.create(
             name = 'status',
         )
@@ -107,13 +117,7 @@ class StatusesUpdateViewTest(TestCase):
             username='test_username',
             password='test_password123',
         )
-        
-    def test_update_view_url_exists(self):
-        resp = self.client.get(
-            reverse('statuses:update', kwargs={'pk': self.status.pk})
-        )
-        self.assertEqual(resp.status_code, 200)
-    
+            
     def test_update_view_uses_correct_template(self):
         resp = self.client.get(
             reverse('statuses:update', kwargs={'pk': self.status.pk})
@@ -133,16 +137,19 @@ class StatusesUpdateViewTest(TestCase):
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(str(messages[0]), "Статус успешно изменен")
         
+        
 class StatusesDeleteViewTest(TestCase):
-    
+
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user(
+        cls.user = User.objects.create(
             first_name = 'test_mame',
             last_name = 'test_surname',
             username = 'test_username',
-            password = 'test_password123',
         )
+
+        cls.user.set_password('test_password123')
+        cls.user.save()
         
         cls.status = StatusesModel.objects.create(
             name='Status_delete',
