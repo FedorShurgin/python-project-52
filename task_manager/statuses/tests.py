@@ -14,7 +14,7 @@ class StatusesViewTest(TestCase):
     def setUpTestData(cls):
         cls.user = User.objects.create(
             first_name = 'test_mame',
-            last_name = 'test_Surname',
+            last_name = 'test_surname',
             username = 'test_username',
             password = 'test_password123',
         )
@@ -23,7 +23,7 @@ class StatusesViewTest(TestCase):
         for status_num in range(number_of_statuses):
             StatusesModel.objects.create(
                 name=f'Status {status_num}',
-                author=cls.user
+                author=cls.user,
             )
 
     def setUp(self):
@@ -97,7 +97,7 @@ class StatusesUpdateViewTest(TestCase):
         )
         
         cls.status = StatusesModel.objects.create(
-            name='Original Status',
+            name='Original_Status',
             author=cls.user
         )
         cls.valid_data = {'name': 'Updated_Status'}
@@ -118,6 +118,7 @@ class StatusesUpdateViewTest(TestCase):
         resp = self.client.get(
             reverse('statuses:update', kwargs={'pk': self.status.pk})
         )
+        self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'statuses/update.html')
         
     def test_update_status_success(self):
@@ -175,13 +176,19 @@ class StatusesDeleteViewTest(TestCase):
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(str(messages[0]), "Статус успешно удален")
         
-    def test_delete_view_requires_login(self):
-        task = TasksModel.objects.create(status=self.status)
+    def test_cannot_delete_used_status(self):
+        TasksModel.objects.create(
+            name="New_Task",
+            status=self.status,
+        )
+        initial_count = StatusesModel.objects.count()
         resp = self.client.post(
             reverse('statuses:delete', kwargs={'pk': self.status.pk})
         )
+        self.assertEqual(StatusesModel.objects.count(), initial_count)
         
-        self.assertContains(
-            resp,
+        messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(
+            str(messages[0]),
             'Невозможно удалить статус, потому что он используется'
         )
