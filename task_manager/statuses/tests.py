@@ -13,8 +13,6 @@ class StatusesViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
-            # first_name = 'test_mame',
-            # last_name = 'test_surname',
             username = 'test_username',
         )
 
@@ -34,21 +32,19 @@ class StatusesViewTest(TestCase):
             password='test_password123',
         )
 
-    def test_statuses_view_url_exists(self):
-        resp = self.client.get(reverse('statuses:statuses'))
-        self.assertEqual(resp.status_code, 200)
 
     def test_statuses_view_uses_correct_template(self):
         resp = self.client.get(reverse('statuses:statuses'))
         self.assertTemplateUsed(resp, 'statuses/statuses.html')
+        self.assertEqual(resp.status_code, 200)
+
+
 
 class StatusesCreateViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
-            first_name = 'test_mame',
-            last_name = 'test_surname',
             username = 'test_username',
         )
 
@@ -62,19 +58,27 @@ class StatusesCreateViewTest(TestCase):
             username='test_username',
             password='test_password123',
         )
-        
-    def test_create_view_url_exists(self):
-        resp = self.client.get(reverse('statuses:create'))
-        self.assertEqual(resp.status_code, 200)
-    
+
     def test_create_view_uses_correct_template(self):
         resp = self.client.get(reverse('statuses:create'))
         self.assertTemplateUsed(resp, 'statuses/create.html')
+        self.assertEqual(resp.status_code, 200)
     
     def test_create_view_uses_correct_form(self):
         resp = self.client.get(reverse('statuses:create'))
         self.assertIsInstance(resp.context['form'], StatusesCreateForm)
-        # проверить что видит пользователь
+    
+    def test_create_view_displays_correct_content(self): # проверить что видит пользователь
+        resp = self.client.get(reverse('statuses:create'))
+        
+        self.assertContains(resp, 'method="post"')
+
+        self.assertContains(resp, 'Создать статус', status_code=200)
+        self.assertContains(resp, 'Имя')
+        
+        self.assertContains(resp, 'type="submit"')
+        self.assertContains(resp, 'Создать')
+        
     
     def test_create_status_success(self):
         resp = self.client.post(
@@ -85,17 +89,25 @@ class StatusesCreateViewTest(TestCase):
         
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(str(messages[0]), "Статус успешно создан")
-        #есть ли в БД статус который только создал
         
-        #создание некоректного статуса
+    def test_created_status_exists_in_db(self): #есть ли в БД статус который только создал
+        test_status_name = "Test status"
         
+        self.client.post(
+            reverse('statuses:create'),
+            data={'name': test_status_name}
+        )
+        self.assertTrue(
+            StatusesModel.objects.filter(name=test_status_name).exists(),
+            "Статус с указанным именем должен существовать в БД"
+        )
+  
+              
 class StatusesUpdateViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
-            first_name = 'test_mame',
-            last_name = 'test_surname',
             username = 'test_username',
         )
 
@@ -136,15 +148,13 @@ class StatusesUpdateViewTest(TestCase):
         
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(str(messages[0]), "Статус успешно изменен")
-        
-        
+
+
 class StatusesDeleteViewTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
-            first_name = 'test_mame',
-            last_name = 'test_surname',
             username = 'test_username',
         )
 
@@ -161,18 +171,13 @@ class StatusesDeleteViewTest(TestCase):
             username='test_username',
             password='test_password123',
         )
-    
-    def test_delete_view_url_exists(self):
-        resp = self.client.get(
-            reverse('statuses:delete', kwargs={'pk': self.status.pk})
-        )
-        self.assertEqual(resp.status_code, 200)
-        
+
     def test_delete_view_uses_correct_template(self):
         resp = self.client.get(
             reverse('statuses:delete', kwargs={'pk': self.status.pk})
         )
         self.assertTemplateUsed(resp, 'statuses/delete.html')
+        self.assertEqual(resp.status_code, 200)
         
     def test_delete_status_success(self):
         resp = self.client.post(
@@ -199,3 +204,21 @@ class StatusesDeleteViewTest(TestCase):
             str(messages[0]),
             'Невозможно удалить статус, потому что он используется'
         )
+
+    def test_delete_view_displays_correct_content(self): # проверить что видит пользователь
+        status = self.status.pk
+                
+        resp = self.client.get(
+            reverse(
+                'statuses:delete',
+                kwargs={'pk': status}
+                )
+            )
+        
+        expected_message = f'Вы уверены, что хотите удалить {self.status.name}'
+        
+        self.assertContains(resp, 'method="post"', status_code=200)
+        self.assertContains(resp, 'Удаление статуса')
+        self.assertContains(resp, expected_message)
+        self.assertContains(resp, 'type="submit"')
+        self.assertContains(resp, 'Да, удалить')
