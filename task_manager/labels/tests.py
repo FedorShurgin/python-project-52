@@ -1,0 +1,219 @@
+from django.contrib.auth.models import User
+from django.contrib.messages import get_messages
+from django.test import TestCase
+from django.urls import reverse
+
+from task_manager.labels.forms import LabelsCreateForm
+from task_manager.labels.models import LabelsModel
+from task_manager.tasks.models import TasksModel
+
+
+class LabelsViewTest(TestCase):
+    
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='test_username',
+        )
+
+        cls.user.set_password('test_password123')
+        cls.user.save()
+        
+        number_of_labels = 12
+        for status_num in range(number_of_labels):
+            LabelsModel.objects.create(
+                name=f'Labels {status_num}',
+                author=cls.user,
+            )
+
+    def setUp(self):
+        self.client.login(
+            username='test_username',
+            password='test_password123',
+        )
+
+    def test_labels_view_uses_correct_template(self):
+        resp = self.client.get(reverse('labels:labels'))
+        self.assertTemplateUsed(resp, 'labels/labels.html')
+        self.assertEqual(resp.status_code, 200)
+
+
+class LabelsCreateViewTest(TestCase):
+    
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='test_username',
+        )
+
+        cls.user.set_password('test_password123')
+        cls.user.save()
+        
+        cls.valid_data = {'name': 'New_Labels'}
+
+    def setUp(self):
+        self.client.login(
+            username='test_username',
+            password='test_password123',
+        )
+
+    def test_labels_view_uses_correct_template(self):
+        resp = self.client.get(reverse('labels:create'))
+        self.assertTemplateUsed(resp, 'labels/create.html')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_labels_view_uses_correct_form(self):
+        resp = self.client.get(reverse('labels:create'))
+        self.assertIsInstance(resp.context['form'], LabelsCreateForm)
+
+    def test_labels_view_displays_correct_content(self):
+        resp = self.client.get(reverse('labels:create'))
+        
+        self.assertContains(resp, 'method="post"')
+
+        self.assertContains(resp, 'Создать метку', status_code=200)
+        self.assertContains(resp, 'Имя')
+        
+        self.assertContains(resp, 'type="submit"')
+        self.assertContains(resp, 'Создать')
+
+    def test_create_label_success(self):
+        resp = self.client.post(
+            reverse('labels:create'),
+            data=self.valid_data
+        )
+        self.assertRedirects(resp, reverse('labels:labels'))
+        
+        messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(str(messages[0]), "Метка успешно создана")
+
+    def test_created_label_exists_in_db(self):
+        test_label_name = "Test labels"
+        
+        self.client.post(
+            reverse('labels:create'),
+            data={'name': test_label_name}
+        )
+        self.assertTrue(
+            LabelsModel.objects.filter(name=test_label_name).exists(),
+            "Метка с указанным именем должена существовать в БД"
+        )
+
+
+class LabelsUpdateViewTest(TestCase):
+    
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='test_username',
+        )
+
+        cls.user.set_password('test_password123')
+        cls.user.save()    
+        
+        cls.label = LabelsModel.objects.create(
+            name='Original_Label',
+            author=cls.user
+        )
+        cls.valid_data = {'name': 'Updated_Label'}
+    
+    def setUp(self):
+        self.client.login(
+            username='test_username',
+            password='test_password123',
+        )
+
+    def test_update_view_uses_correct_template(self):
+        resp = self.client.get(
+            reverse('labels:update', kwargs={'pk': self.label.pk})
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'labels/update.html')
+   
+    def test_update_label_success(self):
+        resp = self.client.post(
+            reverse('labels:update', kwargs={'pk': self.label.pk}),
+            data=self.valid_data
+        )
+        self.assertRedirects(resp, reverse('labels:labels'))
+        self.label.refresh_from_db()
+        self.assertEqual(self.label.name, 'Updated_Label')
+        
+        messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(str(messages[0]), "Метка успешно изменена")
+
+
+class LabelsDeleteViewTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='test_username',
+        )
+
+        cls.user.set_password('test_password123')
+        cls.user.save()
+        
+        cls.label = LabelsModel.objects.create(
+            name='Label_delete',
+            author=cls.user
+        )
+    
+    def setUp(self):
+        self.client.login(
+            username='test_username',
+            password='test_password123',
+        )
+
+    def test_delete_view_uses_correct_template(self):
+        resp = self.client.get(
+            reverse('labels:delete', kwargs={'pk': self.label.pk})
+        )
+        self.assertTemplateUsed(resp, 'labels/delete.html')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_delete_label_success(self):
+        resp = self.client.post(
+            reverse('labels:delete', kwargs={'pk': self.label.pk})
+        )
+        self.assertRedirects(resp, reverse('labels:labels'))
+        
+        messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(str(messages[0]), "Метка успешно удалена")
+
+    def test_cannot_delete_used_label(self):
+        task = TasksModel.objects.create(
+            name="New_Task",
+        )
+        
+        task.labels.add(self.label)
+        
+        initial_count = LabelsModel.objects.count()
+        resp = self.client.post(
+            reverse('labels:delete', kwargs={'pk': self.label.pk})
+        )
+        self.assertEqual(LabelsModel.objects.count(), initial_count)
+        
+        messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(
+            str(messages[0]),
+            'Невозможно удалить метку, потому что она используется'
+        )
+
+    def test_delete_view_displays_correct_content(self):
+        label = self.label.pk
+                
+        resp = self.client.get(
+            reverse(
+                'labels:delete',
+                kwargs={'pk': label}
+                )
+            )
+        
+        expected_message = f'Вы уверены, что хотите удалить {self.label.name}'
+        
+        self.assertContains(resp, 'method="post"', status_code=200)
+        self.assertContains(resp, 'Удаление метки')
+        self.assertContains(resp, expected_message)
+        self.assertContains(resp, 'type="submit"')
+        self.assertContains(resp, 'Да, удалить')

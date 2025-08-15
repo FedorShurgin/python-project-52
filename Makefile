@@ -32,3 +32,6 @@ fix:
 
 check:
 	uv run ruff check task_manager
+
+test:
+	uv run manage.py test

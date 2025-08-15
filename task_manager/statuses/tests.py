@@ -1,11 +1,11 @@
-from django.test import TestCase
+from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
+from django.test import TestCase
 from django.urls import reverse
 
+from task_manager.statuses.forms import StatusesCreateForm
 from task_manager.statuses.models import StatusesModel
 from task_manager.tasks.models import TasksModel
-from task_manager.statuses.forms import StatusesCreateForm
-from django.contrib.auth.models import User
 
 
 class StatusesViewTest(TestCase):
@@ -13,7 +13,7 @@ class StatusesViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
-            username = 'test_username',
+            username='test_username',
         )
 
         cls.user.set_password('test_password123')
@@ -32,12 +32,10 @@ class StatusesViewTest(TestCase):
             password='test_password123',
         )
 
-
     def test_statuses_view_uses_correct_template(self):
         resp = self.client.get(reverse('statuses:statuses'))
         self.assertTemplateUsed(resp, 'statuses/statuses.html')
         self.assertEqual(resp.status_code, 200)
-
 
 
 class StatusesCreateViewTest(TestCase):
@@ -45,7 +43,7 @@ class StatusesCreateViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
-            username = 'test_username',
+            username='test_username',
         )
 
         cls.user.set_password('test_password123')
@@ -68,7 +66,7 @@ class StatusesCreateViewTest(TestCase):
         resp = self.client.get(reverse('statuses:create'))
         self.assertIsInstance(resp.context['form'], StatusesCreateForm)
     
-    def test_create_view_displays_correct_content(self): # проверить что видит пользователь
+    def test_create_view_displays_correct_content(self):
         resp = self.client.get(reverse('statuses:create'))
         
         self.assertContains(resp, 'method="post"')
@@ -77,8 +75,7 @@ class StatusesCreateViewTest(TestCase):
         self.assertContains(resp, 'Имя')
         
         self.assertContains(resp, 'type="submit"')
-        self.assertContains(resp, 'Создать')
-        
+        self.assertContains(resp, 'Создать')        
     
     def test_create_status_success(self):
         resp = self.client.post(
@@ -90,7 +87,7 @@ class StatusesCreateViewTest(TestCase):
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(str(messages[0]), "Статус успешно создан")
         
-    def test_created_status_exists_in_db(self): #есть ли в БД статус который только создал
+    def test_created_status_exists_in_db(self):
         test_status_name = "Test status"
         
         self.client.post(
@@ -108,16 +105,12 @@ class StatusesUpdateViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
-            username = 'test_username',
+            username='test_username',
         )
 
         cls.user.set_password('test_password123')
         cls.user.save()
-      
-        cls.status = StatusesModel.objects.create(
-            name = 'status',
-        )
-        
+
         cls.status = StatusesModel.objects.create(
             name='Original_Status',
             author=cls.user
@@ -155,7 +148,7 @@ class StatusesDeleteViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
-            username = 'test_username',
+            username='test_username',
         )
 
         cls.user.set_password('test_password123')
@@ -205,7 +198,7 @@ class StatusesDeleteViewTest(TestCase):
             'Невозможно удалить статус, потому что он используется'
         )
 
-    def test_delete_view_displays_correct_content(self): # проверить что видит пользователь
+    def test_delete_view_displays_correct_content(self):
         status = self.status.pk
                 
         resp = self.client.get(
