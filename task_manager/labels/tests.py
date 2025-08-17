@@ -20,9 +20,9 @@ class LabelsViewTest(TestCase):
         cls.user.save()
         
         number_of_labels = 12
-        for status_num in range(number_of_labels):
+        for label_num in range(number_of_labels):
             LabelsModel.objects.create(
-                name=f'Labels {status_num}',
+                name=f'Labels {label_num}',
                 author=cls.user,
             )
 
