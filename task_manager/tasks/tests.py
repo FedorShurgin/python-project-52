@@ -207,3 +207,137 @@ class TasksUpdateViewTest(TestCase):
         
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(str(messages[0]), "Задача успешно изменена")
+
+class TaskTaskView(TestCase):
+    
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='test_username',
+        )
+
+        cls.user.set_password('test_password123')
+        cls.user.save()
+        
+        cls.status = StatusesModel.objects.create(name='Test Status')
+        cls.label = LabelsModel.objects.create(name='Test Label')
+        cls.executor = User.objects.create(
+            username='executor_user',
+        )
+        
+        cls.task = TasksModel.objects.create(
+            name='Test Task',
+            description='Test Description',
+            author=cls.user,
+            status=cls.status,
+            executor=cls.executor,
+        )
+        cls.task.labels.add(cls.label)
+
+
+    def setUp(self):
+        self.client.login(
+            username='test_username',
+            password='test_password123',
+        )
+
+    def test_task_view_uses_correct_template(self):
+        resp = self.client.get(reverse('tasks:task', kwargs={'pk': self.task.pk}))
+        self.assertTemplateUsed(resp, 'tasks/task.html')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_task_view_displays_correct_content(self):
+        resp = self.client.get(reverse('tasks:task', kwargs={'pk': self.task.pk}))
+        
+        self.assertContains(resp, 'Просмотр задачи', status_code=200)
+        self.assertContains(resp, 'Задача')
+        self.assertContains(resp, 'Описание')
+        self.assertContains(resp, 'Статус')
+        self.assertContains(resp, 'Дата создания')
+        self.assertContains(resp, 'Исполнитель')
+        self.assertContains(resp, 'Метки')
+
+class TasksDeleteViewTest(TestCase):
+    
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='test_username',
+        )
+
+        cls.user.set_password('test_password123')
+        cls.user.save()
+        
+        cls.status = StatusesModel.objects.create(name='Test Status')
+        cls.label = LabelsModel.objects.create(name='Test Label')
+        cls.executor = User.objects.create(
+            username='executor_user',
+        )
+        cls.author = User.objects.create(
+            username='test_author',
+        )
+        
+        cls.task = TasksModel.objects.create(
+            name='Test Task',
+            description='Test Description',
+            author=cls.user,
+            status=cls.status,
+            executor=cls.executor,
+        )
+        cls.task.labels.add(cls.label)
+
+
+    def setUp(self):
+        self.client.login(
+            username='test_username',
+            password='test_password123',
+        )
+    
+    def test_delete_view_uses_correct_template(self):
+        resp = self.client.get(
+            reverse('tasks:delete', kwargs={'pk': self.task.pk})
+        )
+        self.assertTemplateUsed(resp, 'tasks/delete.html')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_delete_task_success(self):
+        resp = self.client.post(
+            reverse('tasks:delete', kwargs={'pk': self.task.pk})
+        )
+        self.assertRedirects(resp, reverse('tasks:tasks'))
+        
+        messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(str(messages[0]), "Задача успешно удалена")
+    
+    def test_task_view_displays_correct_content(self):
+        resp = self.client.get(reverse('tasks:delete', kwargs={'pk': self.task.pk}))
+        
+        self.assertContains(resp, 'method="post"')
+
+        self.assertContains(resp, 'Удаление', status_code=200)
+
+        self.assertContains(resp, 'type="submit"')
+        self.assertContains(resp, 'Да, удалить')
+
+    def test_cannot_delete_used_task(self):
+        task = TasksModel.objects.create(
+            name='Test Task',
+            description='Test Description',
+            author=self.author,
+            status=self.status,
+            executor=self.executor,
+        )
+        task.labels.add(self.label)
+        
+        initial_count = TasksModel.objects.count()
+        resp = self.client.post(
+            reverse('tasks:delete', kwargs={'pk': task.pk})
+        )
+        self.assertEqual(TasksModel.objects.count(), initial_count)
+        self.assertRedirects(resp, reverse('tasks:tasks'))
+
+        messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(
+            str(messages[0]),
+            'Задачу может удалить только ее автор'
+        )
