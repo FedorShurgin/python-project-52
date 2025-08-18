@@ -143,3 +143,63 @@ class UsersUpdateViewTest(TestCase):
             str(messages[0]),
             "У вас нет прав для изменения другого пользователя."
         )
+
+class UsersDeleteViewTest(TestCase):
+    
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='test_username',
+        )
+
+        cls.user.set_password('test_password123')
+        cls.user.save()
+        
+        cls.other_user = User.objects.create(
+            username='otheruser',
+        )
+        cls.other_user.set_password('testpass123') 
+        cls.other_user.save()
+        
+    def setUp(self):
+        self.client.login(
+            username='test_username',
+            password='test_password123',
+        )
+
+
+    def test_delete_view_uses_correct_template(self):
+        resp = self.client.get(
+            reverse('users:delete', kwargs={'pk': self.user.pk})
+        )
+        self.assertTemplateUsed(resp, 'users/delete.html')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_user_can_delete_own_profile(self):
+        initial_count = User.objects.count()
+        resp = self.client.post(
+            reverse('users:delete', kwargs={'pk': self.user.pk})
+        )
+        self.assertRedirects(resp, reverse('users:users'))
+        self.assertEqual(User.objects.count(), initial_count - 1)
+
+    def test_delete_shows_success_message(self):
+        resp = self.client.post(
+            reverse('users:delete', kwargs={'pk': self.user.pk}),
+        )
+        messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(str(messages[0]), "Пользователь успешно удален")
+
+    def test_user_cannot_delete_other_profile(self):
+        initial_count = User.objects.count()
+        resp = self.client.post(
+            reverse('users:delete', kwargs={'pk': self.other_user.pk})
+        )
+        self.assertRedirects(resp, reverse('users:users'))
+        self.assertEqual(User.objects.count(), initial_count)
+        
+        messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(
+            str(messages[0]),
+            "У вас нет прав для изменения другого пользователя."
+        )
