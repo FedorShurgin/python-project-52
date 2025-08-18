@@ -66,3 +66,80 @@ class UsersViewTest(TestCase):
         User.objects.create(username='anotheruser', password='testpass123')
         response = self.client.get(reverse('users:users'))
         self.assertEqual(len(response.context['users']), 2)
+
+class UsersUpdateViewTest(TestCase):
+    
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='test_username',
+            first_name = 'test_name',
+            last_name ='test_last',
+        )
+
+        cls.user.set_password('test_password123')
+        cls.user.save()
+        
+        cls.other_user = User.objects.create(
+            username='otheruser',
+        )
+        cls.other_user.set_password('testpass123') 
+        cls.other_user.save()
+        
+        cls.new_valid_data = {
+            'username': 'new_username',
+            'first_name': 'new_name',
+            'last_name': 'new_last',
+            'password1': 'new_test_password123',
+            'password2': 'new_test_password123',
+            
+        }
+
+    def setUp(self):
+        self.client.login(
+            username='test_username',
+            password='test_password123',
+        )
+
+    def test_update_view_uses_correct_template(self):
+        resp = self.client.get(
+            reverse('users:update', kwargs={'pk': self.user.pk})
+        )
+        self.assertTemplateUsed(resp, 'users/update.html')
+
+    def test_user_can_update_own_profile(self):        
+        resp = self.client.post(
+            reverse(
+                'users:update',
+                kwargs={'pk': self.user.pk}),
+                data=self.new_valid_data,
+            )
+
+        
+        self.assertRedirects(resp, reverse('users:users'))
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.username, 'new_username')
+        self.assertEqual(self.user.first_name, 'new_name')
+        self.assertEqual(self.user.last_name, 'new_last')
+        self.assertTrue(self.user.check_password('new_test_password123'))
+        
+        self.assertFalse(self.client.login(username='test_username', password='test_password123'))
+        self.assertTrue(self.client.login(username='new_username', password='new_test_password123'))
+
+    def test_update_shows_success_message(self):
+        resp = self.client.post(
+            reverse('users:update', kwargs={'pk': self.user.pk}), data=self.new_valid_data)
+        messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(str(messages[0]), "Пользователь успешно изменен")
+
+    def test_user_cannot_update_other_profile(self):
+        resp = self.client.get(
+            reverse('users:update', kwargs={'pk': self.other_user.pk})
+        )
+        self.assertRedirects(resp, reverse('users:users'))
+        
+        messages = list(get_messages(resp.wsgi_request))
+        self.assertEqual(
+            str(messages[0]),
+            "У вас нет прав для изменения другого пользователя."
+        )
