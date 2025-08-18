@@ -48,3 +48,21 @@ class SignUpViewTest(TestCase):
             data=self.valid_data,
         )
         self.assertEqual(User.objects.count(), initial_count + 1)
+
+class UsersViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create(
+            username='test_username',
+        )
+        cls.user.set_password('test_password123')
+        cls.user.save()
+
+    def test_users_view_uses_correct_template(self):
+        resp = self.client.get(reverse('users:users'))
+        self.assertTemplateUsed(resp, 'users/users.html')
+
+    def test_users_view_shows_all_users(self):
+        User.objects.create(username='anotheruser', password='testpass123')
+        response = self.client.get(reverse('users:users'))
+        self.assertEqual(len(response.context['users']), 2)
