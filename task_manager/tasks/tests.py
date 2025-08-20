@@ -8,6 +8,7 @@ from task_manager.statuses.models import StatusesModel
 from task_manager.tasks.forms import TasksCreateForm
 from task_manager.tasks.models import TasksModel
 
+
 class TasksFilterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -32,14 +33,14 @@ class TasksFilterTest(TestCase):
         for task_num in range(number_of_task):
             if task_num % 2 != 0:
                 TasksModel.objects.create(
-                    name = f'Task {task_num}',
+                    name=f'Task {task_num}',
                     author=cls.user_1,
                     status=cls.status_1,
                     executor=cls.user_1,
                 ).labels.add(cls.label_1)
             else:
                 TasksModel.objects.create(
-                    name = f'Task {task_num}',
+                    name=f'Task {task_num}',
                     author=cls.user_2,
                     status=cls.status_2,
                     executor=cls.user_2,
@@ -91,26 +92,6 @@ class TasksFilterTest(TestCase):
         
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.context['tasks']), 2)
-
-    # def test_filter_my_tasks(self):
-    #     all_tasks_count = TasksModel.objects.count()
-        
-    #     resp = self.client.get(
-    #         reverse('tasks:tasks'),
-    #         {'self_tasks': 'on'}
-    #     )
-    #     self.assertEqual(resp.status_code, 200)
-    #     filtered_tasks = resp.context['tasks']
-    #     self.assertLess(len(filtered_tasks), all_tasks_count)
-        
-    #     for task in filtered_tasks:
-    #         self.assertEqual(task.author, self.user_1)
-        
-    #     self.assertEqual(len(filtered_tasks), 2)
-        
-    #     other_user_tasks = TasksModel.objects.filter(author=self.user_2)
-    #     for task in other_user_tasks:
-    #         self.assertNotIn(task, filtered_tasks)
 
 
 class TasksCreateViewTest(TestCase):
