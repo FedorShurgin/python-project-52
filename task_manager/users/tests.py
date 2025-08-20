@@ -1,8 +1,10 @@
-from django.test import TestCase
-from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
+from django.test import TestCase
+from django.urls import reverse
+
 from task_manager.users.forms import CustomUserCreationForm
+
 
 class SignUpViewTest(TestCase):
     
@@ -16,38 +18,85 @@ class SignUpViewTest(TestCase):
             'password2': 'test_password123',
         }
     
-    def test_signup_view_uses_correct_template(self):
+    def test_signup_view_uses_correct_template_form(self):
         resp = self.client.get(reverse('users:create'))
         self.assertTemplateUsed(resp, 'users/create.html')
-        self.assertEqual(resp.status_code, 200)
-
-
-    def test_signup_view_uses_correct_form(self):
-        resp = self.client.get(reverse('users:create'))
         self.assertIsInstance(resp.context['form'], CustomUserCreationForm)
-        
+        self.assertEqual(resp.status_code, 200)
+      
     def test_successful_signup_redirects_to_login(self):
+        initial_count = User.objects.count()
+
         resp = self.client.post(
             reverse('users:create'),
             data=self.valid_data,
         )
         self.assertRedirects(resp, reverse('login'), status_code=302)
 
-    def test_successful_signup_shows_message(self):
-        resp = self.client.post(
-            reverse('users:create'),
-            data=self.valid_data,
-        )
         messages = list(get_messages(resp.wsgi_request))
-        self.assertEqual(str(messages[0]), "Пользователь успешно зарегистрирован!")
-
-    def test_signup_creates_user(self):
-        initial_count = User.objects.count()
-        resp = self.client.post(
-            reverse('users:create'),
-            data=self.valid_data,
+        self.assertEqual(
+            str(messages[0]),
+            "Пользователь успешно зарегистрирован!"
         )
+
         self.assertEqual(User.objects.count(), initial_count + 1)
+        
+        new_user = User.objects.get(username='NewUser') 
+        self.assertEqual(new_user.first_name, 'New_First_Name')
+        self.assertEqual(new_user.last_name, 'New_last_Name')
+        self.assertTrue(new_user.check_password('test_password123'))
+        
+        self.assertTrue(self.client.login(
+            username='NewUser',
+            password='test_password123'
+            )
+        )
+
+    def test_invalid_signup_shows_errors(self):
+        invalid_data = {
+            'username': '',
+            'first_name': '',
+            'last_name': '',
+            'password1': '123', 
+            'password2': '456'
+        }
+        resp = self.client.post(
+        reverse('users:create'),
+        data=invalid_data
+        )
+        
+        self.assertEqual(resp.status_code, 200)
+        
+        form = resp.context['form']
+        
+        self.assertIn('username', form.errors)
+        self.assertIn('first_name', form.errors)
+        self.assertIn('last_name', form.errors)
+        self.assertIn('password2', form.errors)
+        
+        self.assertIn('Обязательное поле.', form.errors['username'])
+        self.assertIn('Обязательное поле.', form.errors['first_name'])
+        self.assertIn('Обязательное поле.', form.errors['last_name'])
+        self.assertIn(
+            'Введенные пароли не совпадают.',
+            form.errors['password2']
+        )
+
+    def test_labels_view_displays_correct_content(self):
+        resp = self.client.get(reverse('users:create'))
+        
+        self.assertContains(resp, 'method="post"')
+
+        self.assertContains(resp, 'Регистрация', status_code=200)
+        self.assertContains(resp, 'Имя')
+        self.assertContains(resp, 'Фамилия')
+        self.assertContains(resp, 'Имя пользователя')
+        self.assertContains(resp, 'Пароль')
+        self.assertContains(resp, 'Подтверждение пароля')
+        
+        self.assertContains(resp, 'type="submit"')
+        self.assertContains(resp, 'Зарегистрировать')
+
 
 class UsersViewTest(TestCase):
     @classmethod
@@ -59,13 +108,15 @@ class UsersViewTest(TestCase):
         cls.user.save()
 
     def test_users_view_uses_correct_template(self):
+        User.objects.create(
+            username='anotheruser',
+            password='testpass123'
+        )
+
         resp = self.client.get(reverse('users:users'))
         self.assertTemplateUsed(resp, 'users/users.html')
+        self.assertEqual(len(resp.context['users']), 2)
 
-    def test_users_view_shows_all_users(self):
-        User.objects.create(username='anotheruser', password='testpass123')
-        response = self.client.get(reverse('users:users'))
-        self.assertEqual(len(response.context['users']), 2)
 
 class UsersUpdateViewTest(TestCase):
     
@@ -73,8 +124,8 @@ class UsersUpdateViewTest(TestCase):
     def setUpTestData(cls):
         cls.user = User.objects.create(
             username='test_username',
-            first_name = 'test_name',
-            last_name ='test_last',
+            first_name='test_name',
+            last_name='test_last',
         )
 
         cls.user.set_password('test_password123')
@@ -101,11 +152,13 @@ class UsersUpdateViewTest(TestCase):
             password='test_password123',
         )
 
-    def test_update_view_uses_correct_template(self):
+    def test_update_view_uses_correct_template_form(self):
         resp = self.client.get(
             reverse('users:update', kwargs={'pk': self.user.pk})
         )
         self.assertTemplateUsed(resp, 'users/update.html')
+        self.assertIsInstance(resp.context['form'], CustomUserCreationForm)
+
 
     def test_user_can_update_own_profile(self):        
         resp = self.client.post(
@@ -115,7 +168,6 @@ class UsersUpdateViewTest(TestCase):
                 data=self.new_valid_data,
             )
 
-        
         self.assertRedirects(resp, reverse('users:users'))
         self.user.refresh_from_db()
         self.assertEqual(self.user.username, 'new_username')
@@ -123,12 +175,17 @@ class UsersUpdateViewTest(TestCase):
         self.assertEqual(self.user.last_name, 'new_last')
         self.assertTrue(self.user.check_password('new_test_password123'))
         
-        self.assertFalse(self.client.login(username='test_username', password='test_password123'))
-        self.assertTrue(self.client.login(username='new_username', password='new_test_password123'))
+        self.assertFalse(self.client.login(
+            username='test_username',
+            password='test_password123'
+            )
+        )
+        self.assertTrue(self.client.login(
+            username='new_username',
+            password='new_test_password123'
+            )
+        )
 
-    def test_update_shows_success_message(self):
-        resp = self.client.post(
-            reverse('users:update', kwargs={'pk': self.user.pk}), data=self.new_valid_data)
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(str(messages[0]), "Пользователь успешно изменен")
 
@@ -143,6 +200,30 @@ class UsersUpdateViewTest(TestCase):
             str(messages[0]),
             "У вас нет прав для изменения другого пользователя."
         )
+
+    def test_labels_view_displays_correct_content(self):
+        resp = self.client.get(reverse(
+            'users:update',
+            kwargs={'pk': self.user.pk}
+            )
+        )
+        
+        self.assertContains(resp, "method='post'")
+
+        self.assertContains(resp, 'Изменение пользователя', status_code=200)
+        self.assertContains(resp, 'Имя')
+        self.assertContains(resp, 'test_name')
+        self.assertContains(resp, 'Фамилия')
+        self.assertContains(resp, 'test_last')
+        self.assertContains(resp, 'Имя пользователя')
+        self.assertContains(resp, 'test_username')
+
+        self.assertContains(resp, 'Пароль')
+        self.assertContains(resp, 'Подтверждение пароля')
+        
+        self.assertContains(resp, 'type="submit"')
+        self.assertContains(resp, 'Изменить')
+
 
 class UsersDeleteViewTest(TestCase):
     
@@ -167,7 +248,6 @@ class UsersDeleteViewTest(TestCase):
             password='test_password123',
         )
 
-
     def test_delete_view_uses_correct_template(self):
         resp = self.client.get(
             reverse('users:delete', kwargs={'pk': self.user.pk})
@@ -183,10 +263,6 @@ class UsersDeleteViewTest(TestCase):
         self.assertRedirects(resp, reverse('users:users'))
         self.assertEqual(User.objects.count(), initial_count - 1)
 
-    def test_delete_shows_success_message(self):
-        resp = self.client.post(
-            reverse('users:delete', kwargs={'pk': self.user.pk}),
-        )
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(str(messages[0]), "Пользователь успешно удален")
 
@@ -203,3 +279,17 @@ class UsersDeleteViewTest(TestCase):
             str(messages[0]),
             "У вас нет прав для изменения другого пользователя."
         )
+
+    def test_labels_view_displays_correct_content(self):
+        resp = self.client.get(reverse(
+            'users:delete',
+            kwargs={'pk': self.user.pk}
+            )
+        )
+        
+        self.assertContains(resp, 'method="post"')
+
+        self.assertContains(resp, 'Удаление', status_code=200)
+        
+        self.assertContains(resp, 'type="submit"')
+        self.assertContains(resp, 'Да, удалить')

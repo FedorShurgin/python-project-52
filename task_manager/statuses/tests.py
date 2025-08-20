@@ -57,15 +57,12 @@ class StatusesCreateViewTest(TestCase):
             password='test_password123',
         )
 
-    def test_create_view_uses_correct_template(self):
+    def test_create_view_uses_correct_template_form(self):
         resp = self.client.get(reverse('statuses:create'))
         self.assertTemplateUsed(resp, 'statuses/create.html')
-        self.assertEqual(resp.status_code, 200)
-    
-    def test_create_view_uses_correct_form(self):
-        resp = self.client.get(reverse('statuses:create'))
         self.assertIsInstance(resp.context['form'], StatusesCreateForm)
-    
+        self.assertEqual(resp.status_code, 200)
+
     def test_create_view_displays_correct_content(self):
         resp = self.client.get(reverse('statuses:create'))
         
@@ -123,12 +120,13 @@ class StatusesUpdateViewTest(TestCase):
             password='test_password123',
         )
             
-    def test_update_view_uses_correct_template(self):
+    def test_update_view_uses_correct_template_form(self):
         resp = self.client.get(
             reverse('statuses:update', kwargs={'pk': self.status.pk})
         )
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'statuses/update.html')
+        self.assertIsInstance(resp.context['form'], StatusesCreateForm)
         
     def test_update_status_success(self):
         resp = self.client.post(
@@ -141,6 +139,22 @@ class StatusesUpdateViewTest(TestCase):
         
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(str(messages[0]), "Статус успешно изменен")
+
+    def test_create_view_displays_correct_content(self):
+        resp = self.client.get(reverse(
+            'statuses:update',
+            kwargs={'pk': self.status.pk}
+            )
+        )
+        
+        self.assertContains(resp, "method='post'")
+
+        self.assertContains(resp, 'Изменение статуса')
+        self.assertContains(resp, 'Original_Status')
+        self.assertContains(resp, 'Имя')
+        
+        self.assertContains(resp, 'type="submit"')
+        self.assertContains(resp, 'Изменить') 
 
 
 class StatusesDeleteViewTest(TestCase):

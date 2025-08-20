@@ -3,67 +3,115 @@ from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 
-from task_manager.tasks.models import TasksModel
 from task_manager.labels.models import LabelsModel
 from task_manager.statuses.models import StatusesModel
 from task_manager.tasks.forms import TasksCreateForm
+from task_manager.tasks.models import TasksModel
 
+class TasksFilterTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_1 = User.objects.create(
+            username='test_username_1',
+        )
+        cls.user_1.set_password('test_password123')
+        cls.user_1.save()
 
-# class TasksFilterTest(TestCase):
-#     @classmethod
-#     def setUpTestData(cls):
-#         cls.user_1 = User.objects.create(
-#             username='test_username_1',
-#         )
-#         cls.user_1.set_password('test_password123')
-#         cls.user_1.save()
+        cls.user_2 = User.objects.create(
+            username='test_username_2',
+        )
+        cls.user_2.set_password('test_1234password')
+        cls.user_2.save()
         
-#         cls.user_2 = User.objects.create(
-#             username='test_username_2',
-#         )
-#         cls.user_2.set_password('test_1234password')
-#         cls.user_2.save()
+        cls.status_1 = StatusesModel.objects.create(name='Test Status 1')
+        cls.status_2 = StatusesModel.objects.create(name='Test Status 2')
+        cls.label_1 = LabelsModel.objects.create(name='Test Label 1')
+        cls.label_2 = LabelsModel.objects.create(name='Test Label 2')
         
-#         cls.status_1 = StatusesModel.objects.create(name='Test Status 1')
-#         cls.status_2 = StatusesModel.objects.create(name='Test Status 2')
-#         cls.label_1 = LabelsModel.objects.create(name='Test Label 1')
-#         cls.label_2 = LabelsModel.objects.create(name='Test Label 2')
-        
-#         number_of_task = 5
-#         for task_num in range(number_of_task):
-#             if task_num % 2 != 0:
-#                 TasksModel.objects.create(
-#                     name = f'Task {task_num}',
-#                     author=cls.user_1,
-#                     status=cls.status_1,
-#                     executor=cls.user_1,
-#                 ).labels.add(cls.label_1)
-#             else:
-#                 TasksModel.objects.create(
-#                     name = f'Task {task_num}',
-#                     author=cls.user_2,
-#                     status=cls.status_2,
-#                     executor=cls.user_2,
-#                 ).labels.add(cls.label_2)
+        number_of_task = 5
+        for task_num in range(number_of_task):
+            if task_num % 2 != 0:
+                TasksModel.objects.create(
+                    name = f'Task {task_num}',
+                    author=cls.user_1,
+                    status=cls.status_1,
+                    executor=cls.user_1,
+                ).labels.add(cls.label_1)
+            else:
+                TasksModel.objects.create(
+                    name = f'Task {task_num}',
+                    author=cls.user_2,
+                    status=cls.status_2,
+                    executor=cls.user_2,
+                ).labels.add(cls.label_2)
   
-#     def setUp(self):
-#         self.client.login(
-#             username='test_username',
-#             password='test_password123',
-#         )
+    def setUp(self):
+        self.client.login(
+            username='test_username_1',
+            password='test_password123',
+        )
 
-#     def test_tasks_view_uses_correct_template(self):
-#         resp = self.client.get(reverse('tasks:tasks'))
-#         self.assertTemplateUsed(resp, 'tasks/tasks.html')
-#         self.assertEqual(resp.status_code, 200)
+    def test_tasks_view_uses_correct_template(self):
+        resp = self.client.get(reverse('tasks:tasks'))
+        self.assertTemplateUsed(resp, 'tasks/tasks.html')
+        self.assertEqual(resp.status_code, 200)
     
-#     def test_filter_by_status(self):
-#         resp = self.client.get(
-#             reverse('tasks:tasks'),
-#             {'status': self.status_1.pk}
-#         )
-#         self.assertEqual(resp.status_code, 200)
-#         self.assertEqual(len(resp.context['tasks']), 3)
+    def test_filter_by_status(self):
+        resp = self.client.get(
+            reverse('tasks:tasks'),
+            {'status': self.status_1.pk}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.context['tasks']), 2)
+    
+    def test_filter_by_label(self):
+        resp = self.client.get(
+            reverse('tasks:tasks'),
+            {'labels': self.label_2.pk}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.context['tasks']), 3)
+    
+    def test_filter_by_executor(self):
+        resp = self.client.get(
+            reverse('tasks:tasks'),
+            {'executor': self.user_2.pk}
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.context['tasks']), 3)
+        
+    def test_filter_combined(self):
+        resp = self.client.get(
+            reverse('tasks:tasks'),
+            {
+                'author': self.user_1.pk,
+                'status': self.status_1.pk
+            }
+        )
+        
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.context['tasks']), 2)
+
+    # def test_filter_my_tasks(self):
+    #     all_tasks_count = TasksModel.objects.count()
+        
+    #     resp = self.client.get(
+    #         reverse('tasks:tasks'),
+    #         {'self_tasks': 'on'}
+    #     )
+    #     self.assertEqual(resp.status_code, 200)
+    #     filtered_tasks = resp.context['tasks']
+    #     self.assertLess(len(filtered_tasks), all_tasks_count)
+        
+    #     for task in filtered_tasks:
+    #         self.assertEqual(task.author, self.user_1)
+        
+    #     self.assertEqual(len(filtered_tasks), 2)
+        
+    #     other_user_tasks = TasksModel.objects.filter(author=self.user_2)
+    #     for task in other_user_tasks:
+    #         self.assertNotIn(task, filtered_tasks)
+
 
 class TasksCreateViewTest(TestCase):
     
@@ -143,6 +191,7 @@ class TasksCreateViewTest(TestCase):
         self.assertEqual(task.executor, self.executor)
         self.assertEqual(list(task.labels.all()), [self.label])
 
+
 class TasksUpdateViewTest(TestCase):
     
     @classmethod
@@ -187,7 +236,11 @@ class TasksUpdateViewTest(TestCase):
         )
 
     def test_task_view_uses_correct_template(self):
-        resp = self.client.get(reverse('tasks:update', kwargs={'pk': self.task.pk}))
+        resp = self.client.get(reverse(
+            'tasks:update',
+            kwargs={'pk': self.task.pk}
+            )
+        )
         self.assertTemplateUsed(resp, 'tasks/update.html')
         self.assertEqual(resp.status_code, 200)
 
@@ -207,6 +260,30 @@ class TasksUpdateViewTest(TestCase):
         
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(str(messages[0]), "Задача успешно изменена")
+
+    def test_task_view_displays_correct_content(self):
+        resp = self.client.get(reverse(
+            'tasks:update',
+            kwargs={'pk': self.task.pk}
+            )
+        )
+        
+        self.assertContains(resp, "method='post'")
+
+        self.assertContains(resp, 'Изменение задачи', status_code=200)
+        self.assertContains(resp, 'Имя')
+        self.assertContains(resp, 'Original Task')
+        self.assertContains(resp, 'Описание')
+        self.assertContains(resp, 'Original Description')
+        self.assertContains(resp, 'Статус')
+        self.assertContains(resp, 'Original Status')
+        self.assertContains(resp, 'Исполнитель')
+        self.assertContains(resp, 'Метки')
+        self.assertContains(resp, 'Updated Label')
+
+        self.assertContains(resp, 'type="submit"')
+        self.assertContains(resp, 'Изменить')
+
 
 class TaskTaskView(TestCase):
     
@@ -234,7 +311,6 @@ class TaskTaskView(TestCase):
         )
         cls.task.labels.add(cls.label)
 
-
     def setUp(self):
         self.client.login(
             username='test_username',
@@ -242,12 +318,20 @@ class TaskTaskView(TestCase):
         )
 
     def test_task_view_uses_correct_template(self):
-        resp = self.client.get(reverse('tasks:task', kwargs={'pk': self.task.pk}))
+        resp = self.client.get(reverse(
+            'tasks:task',
+            kwargs={'pk': self.task.pk}
+            )
+        )
         self.assertTemplateUsed(resp, 'tasks/task.html')
         self.assertEqual(resp.status_code, 200)
 
     def test_task_view_displays_correct_content(self):
-        resp = self.client.get(reverse('tasks:task', kwargs={'pk': self.task.pk}))
+        resp = self.client.get(reverse(
+            'tasks:task',
+            kwargs={'pk': self.task.pk}
+            )
+        )
         
         self.assertContains(resp, 'Просмотр задачи', status_code=200)
         self.assertContains(resp, 'Задача')
@@ -256,6 +340,7 @@ class TaskTaskView(TestCase):
         self.assertContains(resp, 'Дата создания')
         self.assertContains(resp, 'Исполнитель')
         self.assertContains(resp, 'Метки')
+
 
 class TasksDeleteViewTest(TestCase):
     
@@ -286,7 +371,6 @@ class TasksDeleteViewTest(TestCase):
         )
         cls.task.labels.add(cls.label)
 
-
     def setUp(self):
         self.client.login(
             username='test_username',
@@ -310,7 +394,11 @@ class TasksDeleteViewTest(TestCase):
         self.assertEqual(str(messages[0]), "Задача успешно удалена")
     
     def test_task_view_displays_correct_content(self):
-        resp = self.client.get(reverse('tasks:delete', kwargs={'pk': self.task.pk}))
+        resp = self.client.get(reverse(
+            'tasks:delete',
+            kwargs={'pk': self.task.pk}
+            )
+        )
         
         self.assertContains(resp, 'method="post"')
 
@@ -341,3 +429,17 @@ class TasksDeleteViewTest(TestCase):
             str(messages[0]),
             'Задачу может удалить только ее автор'
         )
+
+    def test_task_view_displays_correct_content(self):
+        resp = self.client.get(reverse(
+            'tasks:delete',
+            kwargs={'pk': self.task.pk}
+            )
+        )
+        
+        self.assertContains(resp, 'method="post"')
+
+        self.assertContains(resp, 'Удаление')
+
+        self.assertContains(resp, 'type="submit"')
+        self.assertContains(resp, 'Да, удалить')

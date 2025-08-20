@@ -57,14 +57,11 @@ class LabelsCreateViewTest(TestCase):
             password='test_password123',
         )
 
-    def test_labels_view_uses_correct_template(self):
+    def test_labels_view_uses_correct_template_form(self):
         resp = self.client.get(reverse('labels:create'))
         self.assertTemplateUsed(resp, 'labels/create.html')
-        self.assertEqual(resp.status_code, 200)
-
-    def test_labels_view_uses_correct_form(self):
-        resp = self.client.get(reverse('labels:create'))
         self.assertIsInstance(resp.context['form'], LabelsCreateForm)
+        self.assertEqual(resp.status_code, 200)
 
     def test_labels_view_displays_correct_content(self):
         resp = self.client.get(reverse('labels:create'))
@@ -129,7 +126,8 @@ class LabelsUpdateViewTest(TestCase):
         )
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'labels/update.html')
-   
+        self.assertIsInstance(resp.context['form'], LabelsCreateForm)
+
     def test_update_label_success(self):
         resp = self.client.post(
             reverse('labels:update', kwargs={'pk': self.label.pk}),
@@ -141,6 +139,22 @@ class LabelsUpdateViewTest(TestCase):
         
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(str(messages[0]), "Метка успешно изменена")
+
+    def test_labels_view_displays_correct_content(self):
+        resp = self.client.get(reverse(
+            'labels:update',
+            kwargs={'pk': self.label.pk}
+            )
+        )
+        
+        self.assertContains(resp, 'method="post"')
+
+        self.assertContains(resp, 'Изменение метки', status_code=200)
+        self.assertContains(resp, 'Имя')
+        self.assertContains(resp, 'Original_Label')
+        
+        self.assertContains(resp, 'type="submit"')
+        self.assertContains(resp, 'Изменить')
 
 
 class LabelsDeleteViewTest(TestCase):
