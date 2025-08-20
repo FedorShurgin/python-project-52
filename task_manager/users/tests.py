@@ -159,7 +159,6 @@ class UsersUpdateViewTest(TestCase):
         self.assertTemplateUsed(resp, 'users/update.html')
         self.assertIsInstance(resp.context['form'], CustomUserCreationForm)
 
-
     def test_user_can_update_own_profile(self):        
         resp = self.client.post(
             reverse(

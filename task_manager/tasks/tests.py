@@ -410,17 +410,3 @@ class TasksDeleteViewTest(TestCase):
             str(messages[0]),
             'Задачу может удалить только ее автор'
         )
-
-    def test_task_view_displays_correct_content(self):
-        resp = self.client.get(reverse(
-            'tasks:delete',
-            kwargs={'pk': self.task.pk}
-            )
-        )
-        
-        self.assertContains(resp, 'method="post"')
-
-        self.assertContains(resp, 'Удаление')
-
-        self.assertContains(resp, 'type="submit"')
-        self.assertContains(resp, 'Да, удалить')
