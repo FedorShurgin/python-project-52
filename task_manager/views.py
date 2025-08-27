@@ -2,15 +2,24 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
+
+from task_manager.mixins import SuccessMessageMixin
+from task_manager.users.forms import CustomUserCreationForm
 
 
-class MyLoginView(LoginView):
+class SignUpView(SuccessMessageMixin, CreateView):
+    form_class = CustomUserCreationForm
+    success_url = reverse_lazy('login')
+    template_name = 'users/create.html'
+    success_message = "Пользователь успешно зарегистрирован!"
+
+
+class MyLoginView(SuccessMessageMixin, LoginView):
     template_name = 'login.html'
-    
-    def form_valid(self, form):
-        super().form_valid(form)
-        messages.success(self.request, "Вы залогинены")
-        return redirect('home') 
+    success_message = "Вы залогинены"
+    success_url = reverse_lazy('home')
 
 
 def logout_user(request):
