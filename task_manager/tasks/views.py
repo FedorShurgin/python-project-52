@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
 from django_filters.views import FilterView
 
-from task_manager.base import SuccessMessageMixin
+from task_manager.mixins import SuccessMessageMixin
 from task_manager.tasks.filters import TasksFilter
 from task_manager.tasks.forms import TasksCreateForm
 from task_manager.tasks.models import TasksModel

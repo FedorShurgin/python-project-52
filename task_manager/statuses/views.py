@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-from task_manager.base import SuccessMessageMixin
+from task_manager.mixins import SuccessMessageMixin
 from task_manager.statuses.forms import StatusesCreateForm
 from task_manager.statuses.models import StatusesModel
 

@@ -5,17 +5,29 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
+from task_manager.mixins import SuccessMessageMixin
 from task_manager.users.forms import CustomUserCreationForm
 
 
-class SignUpView(CreateView):
+class BaseView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin):
+    model = User
+    success_url = reverse_lazy('users:users')
+    error_message = "У вас нет прав для изменения другого пользователя."
+    
+    def test_func(self):
+        user = self.get_object()
+        return self.request.user == user
+    
+    def handle_no_permission(self):
+        messages.error(self.request, self.error_message)
+        return redirect(self.success_url)
+
+
+class SignUpView(SuccessMessageMixin, CreateView):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'users/create.html'
-    
-    def form_valid(self, form):
-        messages.success(self.request, "Пользователь успешно зарегистрирован!")
-        return super().form_valid(form)
+    success_message = "Пользователь успешно зарегистрирован!"
 
 
 class UsersView(ListView):
@@ -24,49 +36,16 @@ class UsersView(ListView):
     context_object_name = 'users'
 
 
-class UsersUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = User
+class UsersUpdateView(BaseView, UpdateView):
     form_class = CustomUserCreationForm
     template_name = 'users/update.html'
     context_object_name = 'user'
     success_url = reverse_lazy('users:users')
-    
-    def test_func(self):
-        user = self.get_object()
-        return self.request.user == user
-    
-    def handle_no_permission(self):
-        messages.error(
-            self.request,
-            "У вас нет прав для изменения другого пользователя."
-        )
-        return redirect('users:users')
-    
-    def form_valid(self, form):
-        messages.success(
-            self.request,
-            "Пользователь успешно изменен"
-        )
-        return super().form_valid(form)
+    success_message = "Пользователь успешно изменен"
 
 
-class UsersDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = User
+class UsersDeleteView(BaseView, DeleteView):
     template_name = 'users/delete.html'
     context_object_name = 'user'
     success_url = reverse_lazy('users:users')
-
-    def test_func(self):
-        user = self.get_object()
-        return self.request.user.id == user.id
-
-    def handle_no_permission(self):
-        messages.error(
-            self.request,
-            "У вас нет прав для изменения другого пользователя."
-        )
-        return redirect('users:users')
-
-    def form_valid(self, form):
-        messages.success(self.request, "Пользователь успешно удален")
-        return super().form_valid(form)
+    success_message = "Пользователь успешно удален"
