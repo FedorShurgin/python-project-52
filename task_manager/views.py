@@ -5,15 +5,20 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
-from task_manager.mixins import SuccessMessageMixin
+from task_manager.mixins import SuccessMessageMixin, UniversalTemplateMixin
 from task_manager.users.forms import CustomUserCreationForm
 
 
-class SignUpView(SuccessMessageMixin, CreateView):
+class SignUpView(
+    UniversalTemplateMixin,
+    SuccessMessageMixin,
+    CreateView
+):
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('login')
-    template_name = 'users/create.html'
     success_message = "Пользователь успешно зарегистрирован!"
+    page_title = "Регистрация"
+    submit_text = "Зарегистрировать"
 
 
 class MyLoginView(SuccessMessageMixin, LoginView):

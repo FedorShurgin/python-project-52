@@ -5,11 +5,16 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, ListView, UpdateView
 
-from task_manager.mixins import SuccessMessageMixin
+from task_manager.mixins import SuccessMessageMixin, UniversalTemplateMixin
 from task_manager.users.forms import CustomUserCreationForm
 
 
-class BaseView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin):
+class BaseView(
+    UniversalTemplateMixin,
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    SuccessMessageMixin
+):
     model = User
     success_url = reverse_lazy('users:users')
     error_message = "У вас нет прав для изменения другого пользователя."
@@ -25,20 +30,19 @@ class BaseView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin):
 
 class UsersView(ListView):
     model = User
-    template_name = 'users/users.html'
+    template_name = 'users.html'
     context_object_name = 'users'
 
-
+   
 class UsersUpdateView(BaseView, UpdateView):
     form_class = CustomUserCreationForm
-    template_name = 'users/update.html'
-    context_object_name = 'user'
-    success_url = reverse_lazy('users:users')
     success_message = "Пользователь успешно изменен"
+    page_title = "Изменение пользователя"
+    submit_text = "Изменить"
 
 
 class UsersDeleteView(BaseView, DeleteView):
-    template_name = 'users/delete.html'
-    context_object_name = 'user'
-    success_url = reverse_lazy('users:users')
     success_message = "Пользователь успешно удален"
+    page_title = "Удаление"
+    submit_text = "Да, удалить"
+    button_class = 'btn-danger'
