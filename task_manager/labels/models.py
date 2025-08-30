@@ -1,10 +1,13 @@
-from django.contrib.auth.models import User
 from django.db import models
 
 
 class LabelsModel(models.Model):
     name = models.CharField(max_length=255, verbose_name="Имя")
-    author = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
+    author = models.ForeignKey(
+        'users.CustomModelUsers',
+        on_delete=models.PROTECT,
+        null=True,
+    )
     date_create = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

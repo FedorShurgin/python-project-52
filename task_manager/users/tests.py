@@ -1,9 +1,12 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 
 from task_manager.users.forms import CustomUserCreationForm
+
+
+User = get_user_model()
 
 
 class SignUpViewTest(TestCase):

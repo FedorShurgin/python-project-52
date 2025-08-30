@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 
 from task_manager.labels.models import LabelsModel
@@ -20,13 +19,13 @@ class TasksModel(models.Model):
         null=True,
     )
     author = models.ForeignKey(
-        User,
+        'users.CustomModelUsers',
         on_delete=models.PROTECT,
         related_name='created_task',
         null=True,
     )
     executor = models.ForeignKey(
-        User,
+        'users.CustomModelUsers',
         on_delete=models.PROTECT,
         related_name='executor_task',
         verbose_name="Исполнитель",

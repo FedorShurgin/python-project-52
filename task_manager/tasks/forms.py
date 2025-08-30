@@ -10,10 +10,5 @@ class TasksCreateForm(forms.ModelForm):
         fields = ['name', 'description', 'status', 'executor', 'labels']
     
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
+        super().__init__(*args, **kwargs)     
         self.fields['labels'].required = False
-        
-        self.fields['executor'].label_from_instance = lambda user: (
-            f"{user.first_name} {user.last_name}"
-        )

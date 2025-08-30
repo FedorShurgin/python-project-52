@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
@@ -6,6 +6,9 @@ from django.urls import reverse
 from task_manager.statuses.forms import StatusesCreateForm
 from task_manager.statuses.models import StatusesModel
 from task_manager.tasks.models import TasksModel
+
+
+User = get_user_model()
 
 
 class StatusesViewTest(TestCase):
