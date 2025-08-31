@@ -1,10 +1,10 @@
 from django.db import models
 
 
-class StatusesModel(models.Model):
+class Status(models.Model):
     name = models.CharField(max_length=255, verbose_name="Имя")
     author = models.ForeignKey(
-        'users.CustomModelUsers',
+        'users.User',
         on_delete=models.CASCADE,
         null=True,
     )

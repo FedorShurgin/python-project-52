@@ -1,10 +1,10 @@
 from django.db import models
 
-from task_manager.labels.models import LabelsModel
-from task_manager.statuses.models import StatusesModel
+from task_manager.labels.models import Label
+from task_manager.statuses.models import Status
 
 
-class TasksModel(models.Model):
+class Task(models.Model):
     name = models.CharField(
         max_length=255,
         verbose_name="Имя",
@@ -13,26 +13,26 @@ class TasksModel(models.Model):
         verbose_name="Описание"
     )
     status = models.ForeignKey(
-        StatusesModel,
+        Status,
         on_delete=models.PROTECT,
         verbose_name="Статус",
         null=True,
     )
     author = models.ForeignKey(
-        'users.CustomModelUsers',
+        'users.User',
         on_delete=models.PROTECT,
         related_name='created_task',
         null=True,
     )
     executor = models.ForeignKey(
-        'users.CustomModelUsers',
+        'users.User',
         on_delete=models.PROTECT,
         related_name='executor_task',
         verbose_name="Исполнитель",
         null=True,
     )
     labels = models.ManyToManyField(
-        LabelsModel,
+        Label,
         related_name='tasks',
         verbose_name="Метки",
     )

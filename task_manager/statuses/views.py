@@ -6,7 +6,7 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from task_manager.mixins import SuccessMessageMixin, UniversalTemplateMixin
 from task_manager.statuses.forms import StatusForm
-from task_manager.statuses.models import StatusesModel
+from task_manager.statuses.models import Status
 
 
 class StatusBaseView(
@@ -14,7 +14,7 @@ class StatusBaseView(
     LoginRequiredMixin,
     SuccessMessageMixin
 ):
-    model = StatusesModel
+    model = Status
     success_url = reverse_lazy('statuses:statuses')
 
 
@@ -46,7 +46,7 @@ class StatusDeleteView(StatusBaseView, DeleteView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if self.object.tasksmodel_set.exists():
+        if self.object.task_set.exists():
             messages.error(
                 request,
                 'Невозможно удалить статус, потому что он используется'

@@ -4,8 +4,8 @@ from django.test import TestCase
 from django.urls import reverse
 
 from task_manager.labels.forms import LabelForm
-from task_manager.labels.models import LabelsModel
-from task_manager.tasks.models import TasksModel
+from task_manager.labels.models import Label
+from task_manager.tasks.models import Task
 
 User = get_user_model()
 
@@ -23,7 +23,7 @@ class LabelListViewTest(TestCase):
         
         number_of_labels = 12
         for label_num in range(number_of_labels):
-            LabelsModel.objects.create(
+            Label.objects.create(
                 name=f'Labels {label_num}',
                 author=cls.user,
             )
@@ -94,7 +94,7 @@ class LabelCreateViewTest(TestCase):
             data={'name': test_label_name}
         )
         self.assertTrue(
-            LabelsModel.objects.filter(name=test_label_name).exists(),
+            Label.objects.filter(name=test_label_name).exists(),
             "Метка с указанным именем должена существовать в БД"
         )
 
@@ -110,7 +110,7 @@ class LabelUpdateViewTest(TestCase):
         cls.user.set_password('test_password123')
         cls.user.save()    
         
-        cls.label = LabelsModel.objects.create(
+        cls.label = Label.objects.create(
             name='Original_Label',
             author=cls.user
         )
@@ -170,7 +170,7 @@ class LabelDeleteViewTest(TestCase):
         cls.user.set_password('test_password123')
         cls.user.save()
         
-        cls.label = LabelsModel.objects.create(
+        cls.label = Label.objects.create(
             name='Label_delete',
             author=cls.user
         )
@@ -198,17 +198,17 @@ class LabelDeleteViewTest(TestCase):
         self.assertEqual(str(messages[0]), "Метка успешно удалена")
 
     def test_cannot_delete_used_label(self):
-        task = TasksModel.objects.create(
+        task = Task.objects.create(
             name="New_Task",
         )
         
         task.labels.add(self.label)
         
-        initial_count = LabelsModel.objects.count()
+        initial_count = Label.objects.count()
         resp = self.client.post(
             reverse('labels:delete', kwargs={'pk': self.label.pk})
         )
-        self.assertEqual(LabelsModel.objects.count(), initial_count)
+        self.assertEqual(Label.objects.count(), initial_count)
         
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(

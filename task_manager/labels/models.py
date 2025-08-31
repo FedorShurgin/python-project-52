@@ -1,10 +1,10 @@
 from django.db import models
 
 
-class LabelsModel(models.Model):
+class Label(models.Model):
     name = models.CharField(max_length=255, verbose_name="Имя")
     author = models.ForeignKey(
-        'users.CustomModelUsers',
+        'users.User',
         on_delete=models.PROTECT,
         null=True,
     )

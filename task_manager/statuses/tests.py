@@ -4,8 +4,8 @@ from django.test import TestCase
 from django.urls import reverse
 
 from task_manager.statuses.forms import StatusForm
-from task_manager.statuses.models import StatusesModel
-from task_manager.tasks.models import TasksModel
+from task_manager.statuses.models import Status
+from task_manager.tasks.models import Task
 
 User = get_user_model()
 
@@ -23,7 +23,7 @@ class StatusListViewTest(TestCase):
         
         number_of_statuses = 12
         for status_num in range(number_of_statuses):
-            StatusesModel.objects.create(
+            Status.objects.create(
                 name=f'Status {status_num}',
                 author=cls.user,
             )
@@ -94,7 +94,7 @@ class StatusCreateViewTest(TestCase):
             data={'name': test_status_name}
         )
         self.assertTrue(
-            StatusesModel.objects.filter(name=test_status_name).exists(),
+            Status.objects.filter(name=test_status_name).exists(),
             "Статус с указанным именем должен существовать в БД"
         )
   
@@ -110,7 +110,7 @@ class StatusUpdateViewTest(TestCase):
         cls.user.set_password('test_password123')
         cls.user.save()
 
-        cls.status = StatusesModel.objects.create(
+        cls.status = Status.objects.create(
             name='Original_Status',
             author=cls.user
         )
@@ -170,7 +170,7 @@ class StatusDeleteViewTest(TestCase):
         cls.user.set_password('test_password123')
         cls.user.save()
         
-        cls.status = StatusesModel.objects.create(
+        cls.status = Status.objects.create(
             name='Status_delete',
             author=cls.user
         )
@@ -198,15 +198,15 @@ class StatusDeleteViewTest(TestCase):
         self.assertEqual(str(messages[0]), "Статус успешно удален")
         
     def test_cannot_delete_used_status(self):
-        TasksModel.objects.create(
+        Task.objects.create(
             name="New_Task",
             status=self.status,
         )
-        initial_count = StatusesModel.objects.count()
+        initial_count = Status.objects.count()
         resp = self.client.post(
             reverse('statuses:delete', kwargs={'pk': self.status.pk})
         )
-        self.assertEqual(StatusesModel.objects.count(), initial_count)
+        self.assertEqual(Status.objects.count(), initial_count)
         
         messages = list(get_messages(resp.wsgi_request))
         self.assertEqual(

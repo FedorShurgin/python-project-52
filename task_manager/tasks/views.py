@@ -8,7 +8,7 @@ from django_filters.views import FilterView
 from task_manager.mixins import SuccessMessageMixin, UniversalTemplateMixin
 from task_manager.tasks.filters import TaskFilter
 from task_manager.tasks.forms import TaskForm
-from task_manager.tasks.models import TasksModel
+from task_manager.tasks.models import Task
 
 
 class TaskBaseView(
@@ -16,7 +16,7 @@ class TaskBaseView(
     LoginRequiredMixin,
     SuccessMessageMixin
 ):
-    model = TasksModel
+    model = Task
     success_url = reverse_lazy('tasks:tasks')
 
 

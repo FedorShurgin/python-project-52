@@ -3,10 +3,10 @@ from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 
-from task_manager.labels.models import LabelsModel
-from task_manager.statuses.models import StatusesModel
+from task_manager.labels.models import Label
+from task_manager.statuses.models import Status
 from task_manager.tasks.forms import TaskForm
-from task_manager.tasks.models import TasksModel
+from task_manager.tasks.models import Task
 
 User = get_user_model()
 
@@ -26,22 +26,22 @@ class TaskFilterTest(TestCase):
         cls.user_2.set_password('test_1234password')
         cls.user_2.save()
         
-        cls.status_1 = StatusesModel.objects.create(name='Test Status 1')
-        cls.status_2 = StatusesModel.objects.create(name='Test Status 2')
-        cls.label_1 = LabelsModel.objects.create(name='Test Label 1')
-        cls.label_2 = LabelsModel.objects.create(name='Test Label 2')
+        cls.status_1 = Status.objects.create(name='Test Status 1')
+        cls.status_2 = Status.objects.create(name='Test Status 2')
+        cls.label_1 = Label.objects.create(name='Test Label 1')
+        cls.label_2 = Label.objects.create(name='Test Label 2')
         
         number_of_task = 5
         for task_num in range(number_of_task):
             if task_num % 2 != 0:
-                TasksModel.objects.create(
+                Task.objects.create(
                     name=f'Task {task_num}',
                     author=cls.user_1,
                     status=cls.status_1,
                     executor=cls.user_1,
                 ).labels.add(cls.label_1)
             else:
-                TasksModel.objects.create(
+                Task.objects.create(
                     name=f'Task {task_num}',
                     author=cls.user_2,
                     status=cls.status_2,
@@ -107,8 +107,8 @@ class TaskCreateViewTest(TestCase):
         cls.user.set_password('test_password123')
         cls.user.save()
         
-        cls.status = StatusesModel.objects.create(name='Test Status')
-        cls.label = LabelsModel.objects.create(name='Test Label')
+        cls.status = Status.objects.create(name='Test Status')
+        cls.label = Label.objects.create(name='Test Label')
         cls.executor = User.objects.create(
             username='executor_user',
         )
@@ -167,7 +167,7 @@ class TaskCreateViewTest(TestCase):
             reverse('tasks:create'),
             data=self.valid_data,
         )
-        task = TasksModel.objects.first()
+        task = Task.objects.first()
         self.assertEqual(task.name, 'Test Task')
         self.assertEqual(task.author, self.user)
         self.assertEqual(task.status, self.status)
@@ -189,13 +189,13 @@ class TaskUpdateViewTest(TestCase):
             username='executor_user',
         )
         
-        cls.status1 = StatusesModel.objects.create(name='Original Status')
-        cls.status2 = StatusesModel.objects.create(name='Updated Status')
+        cls.status1 = Status.objects.create(name='Original Status')
+        cls.status2 = Status.objects.create(name='Updated Status')
         
-        cls.label1 = LabelsModel.objects.create(name='Original Label')
-        cls.label2 = LabelsModel.objects.create(name='Updated Label')
+        cls.label1 = Label.objects.create(name='Original Label')
+        cls.label2 = Label.objects.create(name='Updated Label')
         
-        cls.task = TasksModel.objects.create(
+        cls.task = Task.objects.create(
             name='Original Task',
             description='Original Description',
             author=cls.user,
@@ -279,13 +279,13 @@ class TaskDetailViewTest(TestCase):
         cls.user.set_password('test_password123')
         cls.user.save()
         
-        cls.status = StatusesModel.objects.create(name='Test Status')
-        cls.label = LabelsModel.objects.create(name='Test Label')
+        cls.status = Status.objects.create(name='Test Status')
+        cls.label = Label.objects.create(name='Test Label')
         cls.executor = User.objects.create(
             username='executor_user',
         )
         
-        cls.task = TasksModel.objects.create(
+        cls.task = Task.objects.create(
             name='Test Task',
             description='Test Description',
             author=cls.user,
@@ -336,8 +336,8 @@ class TaskDeleteViewTest(TestCase):
         cls.user.set_password('test_password123')
         cls.user.save()
         
-        cls.status = StatusesModel.objects.create(name='Test Status')
-        cls.label = LabelsModel.objects.create(name='Test Label')
+        cls.status = Status.objects.create(name='Test Status')
+        cls.label = Label.objects.create(name='Test Label')
         cls.executor = User.objects.create(
             username='executor_user',
         )
@@ -345,7 +345,7 @@ class TaskDeleteViewTest(TestCase):
             username='test_author',
         )
         
-        cls.task = TasksModel.objects.create(
+        cls.task = Task.objects.create(
             name='Test Task',
             description='Test Description',
             author=cls.user,
@@ -391,7 +391,7 @@ class TaskDeleteViewTest(TestCase):
         self.assertContains(resp, 'Да, удалить')
 
     def test_cannot_delete_used_task(self):
-        task = TasksModel.objects.create(
+        task = Task.objects.create(
             name='Test Task',
             description='Test Description',
             author=self.author,
@@ -400,11 +400,11 @@ class TaskDeleteViewTest(TestCase):
         )
         task.labels.add(self.label)
         
-        initial_count = TasksModel.objects.count()
+        initial_count = Task.objects.count()
         resp = self.client.post(
             reverse('tasks:delete', kwargs={'pk': task.pk})
         )
-        self.assertEqual(TasksModel.objects.count(), initial_count)
+        self.assertEqual(Task.objects.count(), initial_count)
         self.assertRedirects(resp, reverse('tasks:tasks'))
 
         messages = list(get_messages(resp.wsgi_request))

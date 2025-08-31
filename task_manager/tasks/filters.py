@@ -1,8 +1,8 @@
 from django import forms
 from django_filters import BooleanFilter, FilterSet, ModelChoiceFilter
 
-from task_manager.labels.models import LabelsModel
-from task_manager.tasks.models import TasksModel
+from task_manager.labels.models import Label
+from task_manager.tasks.models import Task
 
 
 class TaskFilter(FilterSet):
@@ -13,7 +13,7 @@ class TaskFilter(FilterSet):
     )
     
     labels = ModelChoiceFilter(
-        queryset=LabelsModel.objects.all(),
+        queryset=Label.objects.all(),
         label='Метка',
         widget=forms.Select,
     )   
@@ -30,5 +30,5 @@ class TaskFilter(FilterSet):
         return queryset 
     
     class Meta:
-        model = TasksModel
+        model = Task
         fields = ['status', 'executor', 'labels', 'my_tasks']
