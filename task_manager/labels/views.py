@@ -4,12 +4,12 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-from task_manager.labels.forms import LabelsCreateForm
+from task_manager.labels.forms import LabelForm
 from task_manager.labels.models import LabelsModel
 from task_manager.mixins import SuccessMessageMixin, UniversalTemplateMixin
 
 
-class BaseLabelsView(
+class LabelBaseView(
     UniversalTemplateMixin,
     LoginRequiredMixin,
     SuccessMessageMixin
@@ -18,26 +18,26 @@ class BaseLabelsView(
     success_url = reverse_lazy('labels:labels')
 
 
-class LabelsView(BaseLabelsView, ListView):
+class LabelListView(LabelBaseView, ListView):
     template_name = 'labels.html'
     context_object_name = 'labels'
 
 
-class LabelsCreateView(BaseLabelsView, CreateView):
-    form_class = LabelsCreateForm
+class LabelCreateView(LabelBaseView, CreateView):
+    form_class = LabelForm
     success_message = 'Метка успешно создана'
     page_title = "Создать метку"
     submit_text = "Создать"
 
 
-class LabelsUpdateView(BaseLabelsView, UpdateView):
-    form_class = LabelsCreateForm
+class LabelUpdateView(LabelBaseView, UpdateView):
+    form_class = LabelForm
     success_message = 'Метка успешно изменена'
     page_title = "Изменение метки"
     submit_text = "Изменить"
 
 
-class LabelsDeleteView(BaseLabelsView, DeleteView):
+class LabelDeleteView(LabelBaseView, DeleteView):
     success_message = 'Метка успешно удалена'
     page_title = "Удаление метки"
     submit_text = "Да, удалить"

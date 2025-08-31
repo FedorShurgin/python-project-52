@@ -3,15 +3,14 @@ from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 
-from task_manager.statuses.forms import StatusesCreateForm
+from task_manager.statuses.forms import StatusForm
 from task_manager.statuses.models import StatusesModel
 from task_manager.tasks.models import TasksModel
-
 
 User = get_user_model()
 
 
-class StatusesViewTest(TestCase):
+class StatusListViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -37,11 +36,11 @@ class StatusesViewTest(TestCase):
 
     def test_statuses_view_uses_correct_template(self):
         resp = self.client.get(reverse('statuses:statuses'))
-        self.assertTemplateUsed(resp, 'statuses/statuses.html')
+        self.assertTemplateUsed(resp, 'statuses.html')
         self.assertEqual(resp.status_code, 200)
 
 
-class StatusesCreateViewTest(TestCase):
+class StatusCreateViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -62,8 +61,8 @@ class StatusesCreateViewTest(TestCase):
 
     def test_create_view_uses_correct_template_form(self):
         resp = self.client.get(reverse('statuses:create'))
-        self.assertTemplateUsed(resp, 'statuses/create.html')
-        self.assertIsInstance(resp.context['form'], StatusesCreateForm)
+        self.assertTemplateUsed(resp, 'form.html')
+        self.assertIsInstance(resp.context['form'], StatusForm)
         self.assertEqual(resp.status_code, 200)
 
     def test_create_view_displays_correct_content(self):
@@ -100,7 +99,7 @@ class StatusesCreateViewTest(TestCase):
         )
   
               
-class StatusesUpdateViewTest(TestCase):
+class StatusUpdateViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -128,8 +127,8 @@ class StatusesUpdateViewTest(TestCase):
             reverse('statuses:update', kwargs={'pk': self.status.pk})
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'statuses/update.html')
-        self.assertIsInstance(resp.context['form'], StatusesCreateForm)
+        self.assertTemplateUsed(resp, 'form.html')
+        self.assertIsInstance(resp.context['form'], StatusForm)
         
     def test_update_status_success(self):
         resp = self.client.post(
@@ -150,7 +149,7 @@ class StatusesUpdateViewTest(TestCase):
             )
         )
         
-        self.assertContains(resp, "method='post'")
+        self.assertContains(resp, 'method="post"')
 
         self.assertContains(resp, 'Изменение статуса')
         self.assertContains(resp, 'Original_Status')
@@ -160,7 +159,7 @@ class StatusesUpdateViewTest(TestCase):
         self.assertContains(resp, 'Изменить') 
 
 
-class StatusesDeleteViewTest(TestCase):
+class StatusDeleteViewTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
@@ -186,7 +185,7 @@ class StatusesDeleteViewTest(TestCase):
         resp = self.client.get(
             reverse('statuses:delete', kwargs={'pk': self.status.pk})
         )
-        self.assertTemplateUsed(resp, 'statuses/delete.html')
+        self.assertTemplateUsed(resp, 'form.html')
         self.assertEqual(resp.status_code, 200)
         
     def test_delete_status_success(self):

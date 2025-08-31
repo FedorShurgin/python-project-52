@@ -3,13 +3,12 @@ from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 
-from task_manager.users.forms import CustomUserCreationForm
-
+from task_manager.users.forms import UserCreationForm
 
 User = get_user_model()
 
 
-class SignUpViewTest(TestCase):
+class UserCreateViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -22,16 +21,16 @@ class SignUpViewTest(TestCase):
         }
     
     def test_signup_view_uses_correct_template_form(self):
-        resp = self.client.get(reverse('users:create'))
-        self.assertTemplateUsed(resp, 'users/create.html')
-        self.assertIsInstance(resp.context['form'], CustomUserCreationForm)
+        resp = self.client.get(reverse('create'))
+        self.assertTemplateUsed(resp, 'form.html')
+        self.assertIsInstance(resp.context['form'], UserCreationForm)
         self.assertEqual(resp.status_code, 200)
       
     def test_successful_signup_redirects_to_login(self):
         initial_count = User.objects.count()
 
         resp = self.client.post(
-            reverse('users:create'),
+            reverse('create'),
             data=self.valid_data,
         )
         self.assertRedirects(resp, reverse('login'), status_code=302)
@@ -64,7 +63,7 @@ class SignUpViewTest(TestCase):
             'password2': '456'
         }
         resp = self.client.post(
-        reverse('users:create'),
+        reverse('create'),
         data=invalid_data
         )
         
@@ -86,7 +85,7 @@ class SignUpViewTest(TestCase):
         )
 
     def test_labels_view_displays_correct_content(self):
-        resp = self.client.get(reverse('users:create'))
+        resp = self.client.get(reverse('create'))
         
         self.assertContains(resp, 'method="post"')
 
@@ -101,7 +100,7 @@ class SignUpViewTest(TestCase):
         self.assertContains(resp, 'Зарегистрировать')
 
 
-class UsersViewTest(TestCase):
+class UserListViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(
@@ -117,11 +116,11 @@ class UsersViewTest(TestCase):
         )
 
         resp = self.client.get(reverse('users:users'))
-        self.assertTemplateUsed(resp, 'users/users.html')
+        self.assertTemplateUsed(resp, 'users.html')
         self.assertEqual(len(resp.context['users']), 2)
 
 
-class UsersUpdateViewTest(TestCase):
+class UserUpdateViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -159,8 +158,8 @@ class UsersUpdateViewTest(TestCase):
         resp = self.client.get(
             reverse('users:update', kwargs={'pk': self.user.pk})
         )
-        self.assertTemplateUsed(resp, 'users/update.html')
-        self.assertIsInstance(resp.context['form'], CustomUserCreationForm)
+        self.assertTemplateUsed(resp, 'form.html')
+        self.assertIsInstance(resp.context['form'], UserCreationForm)
 
     def test_user_can_update_own_profile(self):        
         resp = self.client.post(
@@ -210,7 +209,7 @@ class UsersUpdateViewTest(TestCase):
             )
         )
         
-        self.assertContains(resp, "method='post'")
+        self.assertContains(resp, 'method="post"')
 
         self.assertContains(resp, 'Изменение пользователя', status_code=200)
         self.assertContains(resp, 'Имя')
@@ -227,7 +226,7 @@ class UsersUpdateViewTest(TestCase):
         self.assertContains(resp, 'Изменить')
 
 
-class UsersDeleteViewTest(TestCase):
+class UserDeleteViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -254,7 +253,7 @@ class UsersDeleteViewTest(TestCase):
         resp = self.client.get(
             reverse('users:delete', kwargs={'pk': self.user.pk})
         )
-        self.assertTemplateUsed(resp, 'users/delete.html')
+        self.assertTemplateUsed(resp, 'form.html')
         self.assertEqual(resp.status_code, 200)
 
     def test_user_can_delete_own_profile(self):

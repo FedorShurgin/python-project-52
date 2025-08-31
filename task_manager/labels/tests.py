@@ -3,15 +3,14 @@ from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
 
-from task_manager.labels.forms import LabelsCreateForm
+from task_manager.labels.forms import LabelForm
 from task_manager.labels.models import LabelsModel
 from task_manager.tasks.models import TasksModel
-
 
 User = get_user_model()
 
 
-class LabelsViewTest(TestCase):
+class LabelListViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -37,11 +36,11 @@ class LabelsViewTest(TestCase):
 
     def test_labels_view_uses_correct_template(self):
         resp = self.client.get(reverse('labels:labels'))
-        self.assertTemplateUsed(resp, 'labels/labels.html')
+        self.assertTemplateUsed(resp, 'labels.html')
         self.assertEqual(resp.status_code, 200)
 
 
-class LabelsCreateViewTest(TestCase):
+class LabelCreateViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -62,8 +61,8 @@ class LabelsCreateViewTest(TestCase):
 
     def test_labels_view_uses_correct_template_form(self):
         resp = self.client.get(reverse('labels:create'))
-        self.assertTemplateUsed(resp, 'labels/create.html')
-        self.assertIsInstance(resp.context['form'], LabelsCreateForm)
+        self.assertTemplateUsed(resp, 'form.html')
+        self.assertIsInstance(resp.context['form'], LabelForm)
         self.assertEqual(resp.status_code, 200)
 
     def test_labels_view_displays_correct_content(self):
@@ -100,7 +99,7 @@ class LabelsCreateViewTest(TestCase):
         )
 
 
-class LabelsUpdateViewTest(TestCase):
+class LabelUpdateViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -128,8 +127,8 @@ class LabelsUpdateViewTest(TestCase):
             reverse('labels:update', kwargs={'pk': self.label.pk})
         )
         self.assertEqual(resp.status_code, 200)
-        self.assertTemplateUsed(resp, 'labels/update.html')
-        self.assertIsInstance(resp.context['form'], LabelsCreateForm)
+        self.assertTemplateUsed(resp, 'form.html')
+        self.assertIsInstance(resp.context['form'], LabelForm)
 
     def test_update_label_success(self):
         resp = self.client.post(
@@ -160,7 +159,7 @@ class LabelsUpdateViewTest(TestCase):
         self.assertContains(resp, 'Изменить')
 
 
-class LabelsDeleteViewTest(TestCase):
+class LabelDeleteViewTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
@@ -186,7 +185,7 @@ class LabelsDeleteViewTest(TestCase):
         resp = self.client.get(
             reverse('labels:delete', kwargs={'pk': self.label.pk})
         )
-        self.assertTemplateUsed(resp, 'labels/delete.html')
+        self.assertTemplateUsed(resp, 'form.html')
         self.assertEqual(resp.status_code, 200)
 
     def test_delete_label_success(self):

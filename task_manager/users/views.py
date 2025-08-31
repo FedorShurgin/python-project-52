@@ -1,18 +1,17 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, ListView, UpdateView
 
 from task_manager.mixins import SuccessMessageMixin, UniversalTemplateMixin
-from task_manager.users.forms import CustomUserCreationForm
-
+from task_manager.users.forms import UserCreationForm
 
 User = get_user_model()
 
 
-class BaseView(
+class UserBaseView(
     UniversalTemplateMixin,
     LoginRequiredMixin,
     UserPassesTestMixin,
@@ -31,20 +30,20 @@ class BaseView(
         return redirect(self.success_url)
 
 
-class UsersView(ListView):
+class UserListView(ListView):
     model = User
     template_name = 'users.html'
     context_object_name = 'users'
 
    
-class UsersUpdateView(BaseView, UpdateView):
-    form_class = CustomUserCreationForm
+class UserUpdateView(UserBaseView, UpdateView):
+    form_class = UserCreationForm
     success_message = "Пользователь успешно изменен"
     page_title = "Изменение пользователя"
     submit_text = "Изменить"
 
 
-class UsersDeleteView(BaseView, DeleteView):
+class UserDeleteView(UserBaseView, DeleteView):
     success_message = "Пользователь успешно удален"
     page_title = "Удаление"
     submit_text = "Да, удалить"

@@ -5,7 +5,7 @@ from task_manager.labels.models import LabelsModel
 from task_manager.tasks.models import TasksModel
 
 
-class TasksFilter(FilterSet):
+class TaskFilter(FilterSet):
     my_tasks = BooleanFilter(
         method='filter_my_tasks',
         label='Только свои задачи',

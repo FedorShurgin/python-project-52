@@ -18,16 +18,16 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic.base import TemplateView
 
-from task_manager.views import MyLoginView, SignUpView, logout_user
+from task_manager.views import UserCreateView, UserLoginView, logout_user
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
     path('users/', include('task_manager.users.urls')),
-    path('users/create/', SignUpView.as_view(), name='create'),
+    path('users/create/', UserCreateView.as_view(), name='create'),
     path('statuses/', include('task_manager.statuses.urls')),
     path('labels/', include('task_manager.labels.urls')),
     path('tasks/', include('task_manager.tasks.urls')),
-    path('login/', MyLoginView.as_view(), name='login'),
+    path('login/', UserLoginView.as_view(), name='login'),
     path('logout/', logout_user, name='logout'),
     path('admin/', admin.site.urls),
 ]

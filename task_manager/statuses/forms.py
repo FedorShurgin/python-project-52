@@ -3,7 +3,7 @@ from django import forms
 from task_manager.statuses.models import StatusesModel
 
 
-class StatusesCreateForm(forms.ModelForm):
+class StatusForm(forms.ModelForm):
     
     class Meta:
         model = StatusesModel

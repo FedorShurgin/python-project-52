@@ -5,14 +5,13 @@ from django.urls import reverse
 
 from task_manager.labels.models import LabelsModel
 from task_manager.statuses.models import StatusesModel
-from task_manager.tasks.forms import TasksCreateForm
+from task_manager.tasks.forms import TaskForm
 from task_manager.tasks.models import TasksModel
-
 
 User = get_user_model()
 
 
-class TasksFilterTest(TestCase):
+class TaskFilterTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user_1 = User.objects.create(
@@ -57,7 +56,7 @@ class TasksFilterTest(TestCase):
 
     def test_tasks_view_uses_correct_template(self):
         resp = self.client.get(reverse('tasks:tasks'))
-        self.assertTemplateUsed(resp, 'tasks/tasks.html')
+        self.assertTemplateUsed(resp, 'tasks.html')
         self.assertEqual(resp.status_code, 200)
     
     def test_filter_by_status(self):
@@ -97,7 +96,7 @@ class TasksFilterTest(TestCase):
         self.assertEqual(len(resp.context['tasks']), 2)
 
 
-class TasksCreateViewTest(TestCase):
+class TaskCreateViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -130,12 +129,12 @@ class TasksCreateViewTest(TestCase):
 
     def test_task_view_uses_correct_template(self):
         resp = self.client.get(reverse('tasks:create'))
-        self.assertTemplateUsed(resp, 'tasks/create.html')
+        self.assertTemplateUsed(resp, 'form.html')
         self.assertEqual(resp.status_code, 200)
 
     def test_task_view_uses_correct_form(self):
         resp = self.client.get(reverse('tasks:create'))
-        self.assertIsInstance(resp.context['form'], TasksCreateForm)
+        self.assertIsInstance(resp.context['form'], TaskForm)
 
     def test_task_view_displays_correct_content(self):
         resp = self.client.get(reverse('tasks:create'))
@@ -176,7 +175,7 @@ class TasksCreateViewTest(TestCase):
         self.assertEqual(list(task.labels.all()), [self.label])
 
 
-class TasksUpdateViewTest(TestCase):
+class TaskUpdateViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -225,7 +224,7 @@ class TasksUpdateViewTest(TestCase):
             kwargs={'pk': self.task.pk}
             )
         )
-        self.assertTemplateUsed(resp, 'tasks/update.html')
+        self.assertTemplateUsed(resp, 'form.html')
         self.assertEqual(resp.status_code, 200)
 
     def test_update_task_success(self):
@@ -252,7 +251,7 @@ class TasksUpdateViewTest(TestCase):
             )
         )
         
-        self.assertContains(resp, "method='post'")
+        self.assertContains(resp, 'method="post"')
 
         self.assertContains(resp, 'Изменение задачи', status_code=200)
         self.assertContains(resp, 'Имя')
@@ -269,7 +268,7 @@ class TasksUpdateViewTest(TestCase):
         self.assertContains(resp, 'Изменить')
 
 
-class TaskTaskView(TestCase):
+class TaskDetailViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -307,7 +306,7 @@ class TaskTaskView(TestCase):
             kwargs={'pk': self.task.pk}
             )
         )
-        self.assertTemplateUsed(resp, 'tasks/task.html')
+        self.assertTemplateUsed(resp, 'task.html')
         self.assertEqual(resp.status_code, 200)
 
     def test_task_view_displays_correct_content(self):
@@ -326,7 +325,7 @@ class TaskTaskView(TestCase):
         self.assertContains(resp, 'Метки')
 
 
-class TasksDeleteViewTest(TestCase):
+class TaskDeleteViewTest(TestCase):
     
     @classmethod
     def setUpTestData(cls):
@@ -365,7 +364,7 @@ class TasksDeleteViewTest(TestCase):
         resp = self.client.get(
             reverse('tasks:delete', kwargs={'pk': self.task.pk})
         )
-        self.assertTemplateUsed(resp, 'tasks/delete.html')
+        self.assertTemplateUsed(resp, 'form.html')
         self.assertEqual(resp.status_code, 200)
 
     def test_delete_task_success(self):

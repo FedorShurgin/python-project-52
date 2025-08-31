@@ -5,11 +5,11 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from task_manager.mixins import SuccessMessageMixin, UniversalTemplateMixin
-from task_manager.statuses.forms import StatusesCreateForm
+from task_manager.statuses.forms import StatusForm
 from task_manager.statuses.models import StatusesModel
 
 
-class BaseStatusView(
+class StatusBaseView(
     UniversalTemplateMixin,
     LoginRequiredMixin,
     SuccessMessageMixin
@@ -18,26 +18,26 @@ class BaseStatusView(
     success_url = reverse_lazy('statuses:statuses')
 
 
-class StatusesView(BaseStatusView, ListView):
+class StatusListView(StatusBaseView, ListView):
     template_name = 'statuses.html'
     context_object_name = 'statuses'
 
 
-class StatusesCreateView(BaseStatusView, CreateView):
-    form_class = StatusesCreateForm
+class StatusCreateView(StatusBaseView, CreateView):
+    form_class = StatusForm
     success_message = "Статус успешно создан"
     page_title = "Создать статус"
     submit_text = "Создать"
 
 
-class StatusesUpdateView(BaseStatusView, UpdateView):
-    form_class = StatusesCreateForm
+class StatusUpdateView(StatusBaseView, UpdateView):
+    form_class = StatusForm
     success_message = "Статус успешно изменен"
     page_title = "Изменение статуса"
     submit_text = "Изменить"
 
 
-class StatusesDeleteView(BaseStatusView, DeleteView):
+class StatusDeleteView(StatusBaseView, DeleteView):
     success_message = "Статус успешно удален"
     page_title = "Удаление статуса"
     submit_text = "Да, удалить"

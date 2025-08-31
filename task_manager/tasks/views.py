@@ -6,12 +6,12 @@ from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
 from django_filters.views import FilterView
 
 from task_manager.mixins import SuccessMessageMixin, UniversalTemplateMixin
-from task_manager.tasks.filters import TasksFilter
-from task_manager.tasks.forms import TasksCreateForm
+from task_manager.tasks.filters import TaskFilter
+from task_manager.tasks.forms import TaskForm
 from task_manager.tasks.models import TasksModel
 
 
-class BaseTasksView(
+class TaskBaseView(
     UniversalTemplateMixin,
     LoginRequiredMixin,
     SuccessMessageMixin
@@ -20,14 +20,14 @@ class BaseTasksView(
     success_url = reverse_lazy('tasks:tasks')
 
 
-class TasksView(BaseTasksView, FilterView):
-    filterset_class = TasksFilter
+class TaskListView(TaskBaseView, FilterView):
+    filterset_class = TaskFilter
     template_name = 'tasks.html'
     context_object_name = 'tasks'
     
 
-class TasksCreateView(BaseTasksView, CreateView):
-    form_class = TasksCreateForm
+class TaskCreateView(TaskBaseView, CreateView):
+    form_class = TaskForm
     success_message = 'Задача успешно создана'
     page_title = "Создать задачу"
     submit_text = "Создать"
@@ -37,19 +37,19 @@ class TasksCreateView(BaseTasksView, CreateView):
         return super().form_valid(form)
 
 
-class TaskView(BaseTasksView, DetailView):
+class TaskDetailView(TaskBaseView, DetailView):
     template_name = 'task.html'
     context_object_name = 'task'
 
 
-class TaskUpdateView(BaseTasksView, UpdateView):
-    form_class = TasksCreateForm
+class TaskUpdateView(TaskBaseView, UpdateView):
+    form_class = TaskForm
     success_message = 'Задача успешно изменена'
     page_title = "Изменение задачи"
     submit_text = "Изменить"
 
 
-class TaskDeleteView(BaseTasksView, UserPassesTestMixin, DeleteView):
+class TaskDeleteView(TaskBaseView, UserPassesTestMixin, DeleteView):
     success_message = 'Задача успешно удалена'
     page_title = "Удаление"
     submit_text = "Да, удалить"
